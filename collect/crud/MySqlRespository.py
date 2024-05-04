@@ -1,5 +1,8 @@
 from typing import List
-from database.MySqlClient import Session
+
+from sqlmodel import Session
+
+from database.MySqlClient import get_database, LocalSession
 from entity.Error import Error
 
 
@@ -14,4 +17,4 @@ def find_all(session: Session) -> List[Error]:
     return session.query(Error).all()
 
 
-print(find_all(Session()))
+print(find_all(get_database()))

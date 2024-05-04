@@ -30,6 +30,9 @@ H
 crud/MySqlRespository.py,1/0/1081ad28ef6ea2c3d5284dfc5f0fa20789cece3a
 G
 crud/MongoRepository.py,3/6/36f5da838cd2ca78530a04eaf67dcf00a27ffdca
-:
-
-.gitignore,a/5/a5cc2925ca8258af241be7e5b0381edf30266302
+w
+G.idea/sonarlint/issuestore/1/0/1081ad28ef6ea2c3d5284dfc5f0fa20789cece3a,3/7/37c8bb4fc39c8214ee0a8b11612a43e04c2440fc
+Å
+Q.idea/sonarlint/securityhotspotstore/1/0/1081ad28ef6ea2c3d5284dfc5f0fa20789cece3a,e/4/e454ff72663583342722280c9430cedf31126383
+Å
+Q.idea/sonarlint/securityhotspotstore/c/5/c52f14f259843537c3e1ade584070fc48125ff7e,6/e/6e5c2f78b25fee0e6929cb4e95c1947e92345f8a
