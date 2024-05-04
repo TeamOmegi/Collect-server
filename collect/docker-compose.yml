@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  comsumer:
+    build: .
+    image: collect-server:latest
+    container_name: collect-server
+    networks:
+      - omegi-net
+    ports:
+      - "8085:8085"
+
+networks:
+  omegi-net:
+    external: true

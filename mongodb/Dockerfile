@@ -1,0 +1,9 @@
+FROM mongo:latest
+
+ENV MONGO_INITDB_ROOT_USERNAME=root
+ENV MONGO_INITDB_ROOT_PASSWORD=ssafy308
+ENV MONGO_INITDB_DATABASE=omegi
+
+COPY init-mongo.js /docker-entrypoint-initdb.d/
+
+EXPOSE 27017

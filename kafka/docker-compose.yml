@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+  kafka:
+    image: wurstmeister/kafka:latest
+    container_name: kafka
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CREATE_TOPICS: "error:1:1"
+    ports:
+      - "9092:9092"
+    networks:
+      - omegi-net
+
+  zookeeper:
+    image: wurstmeister/zookeeper:latest
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    networks:
+      - omegi-net
+
+networks:
+  omegi-net:
+    external: true
