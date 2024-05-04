@@ -2,7 +2,7 @@ from typing import List
 
 from sqlmodel import Session
 
-from database.MySqlClient import get_database, LocalSession
+from database.MySqlClient import get_database
 from entity.Error import Error
 
 
