@@ -1,5 +1,5 @@
 from entity.ErrorLog import ErrorLog
-from mongo_crud import MongoRepository
+from crud import MongoRepository
 
 
 # 에러 로그 원본 가공 후 저장
