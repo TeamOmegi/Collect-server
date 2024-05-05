@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MyService {
     private static final Logger logger = LoggerFactory.getLogger(MyService.class);
+    private final YourService yourService;
     public void testMethod1() throws Exception {
         logger.info("In TestMethod1");
     }
@@ -21,5 +22,6 @@ public class MyService {
 
     private void testMethod3() throws Exception {
         logger.info("In TestMethod3");
+        yourService.testMethod4("파라미터 넘어갑니다");
     }
 }

@@ -92,6 +92,8 @@ dependencies {
     implementation("io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi:1.37.0");
     implementation 'io.opentelemetry.javaagent:opentelemetry-javaagent-extension-api:1.33.0-alpha'
     implementation 'io.opentelemetry.javaagent:opentelemetry-javaagent-bootstrap:2.3.0-alpha'
+    implementation("io.opentelemetry.semconv:opentelemetry-semconv:1.25.0-alpha");
+    implementation("io.opentelemetry:opentelemetry-exporter-logging:1.37.0");
 
     //auto-service
     implementation 'com.google.auto.service:auto-service:1.1.1'
@@ -101,6 +103,9 @@ dependencies {
 
     // kakfa
     implementation 'org.apache.kafka:kafka-clients:3.4.0'
+
+    // gson
+    implementation 'com.google.code.gson:gson:2.10.1'
 }
 
 tasks.named('test') {

@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 @AutoService({InstrumentationModule.class})
-public class OmegiExtendedInstrumentationModule extends InstrumentationModule {
+public final class OmegiExtendedInstrumentationModule extends InstrumentationModule {
 
 	public OmegiExtendedInstrumentationModule() {
 		super("omegi-extended", new String[]{"omegiextended"});

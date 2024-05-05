@@ -7,6 +7,7 @@ import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Scope;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+
 import net.bytebuddy.asm.Advice.Local;
 import net.bytebuddy.asm.Advice.OnMethodEnter;
 import net.bytebuddy.asm.Advice.OnMethodExit;
@@ -14,7 +15,6 @@ import net.bytebuddy.asm.Advice.Origin;
 import net.bytebuddy.asm.Advice.Thrown;
 
 public class OmegiAdvice {
-
 	@OnMethodEnter(suppress = Throwable.class)
 	public static Scope onEnter(@Origin Method method, @Local("otelSpan") Span span, @Local("otelScope") Scope scope) {
 		Tracer tracer = GlobalOpenTelemetry.getTracer("omegi", "omegi:1.0.0");
