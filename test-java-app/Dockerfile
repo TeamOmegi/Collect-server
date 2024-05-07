@@ -10,13 +10,11 @@ COPY omegi-opentelemetry-javaagent.jar /app/omegi-opentelemetry-javaagent.jar
 
 CMD ["java", \
      "-javaagent:omegi-opentelemetry-javaagent.jar", \
+     "-Dotel.exporter.omegi.token=token", \
      "-Dotel.traces.exporter=OmegiTraceSpanExporter", \
      "-Dotel.logs.exporter=none", \
      "-Dotel.metrics.exporter=none", \
-     "-Dotel.instrumentation.spring.enabled=true", \
-     "-Dotel.service.name=omegi", \
-     # "-Dotel.javaagent.debug=true", \
-     "-Dotel.instrumentation.methods.include=org.omegi.test", \
+     "-Dotel.service.name=service-name", \
      "-jar", "app.jar"]
 
 # 실행 명령
