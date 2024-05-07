@@ -1,1 +1,2 @@
 org.omegi.omegiextension.OmegiTraceSpanExporterFactory
+org.omegi.omegiextension.SampleOmegiTraceSpanExporterFactory
