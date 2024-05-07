@@ -14,7 +14,7 @@ load_dotenv()
 
 class ErrorConsumerService:
     bootstrap_servers = ''
-    topic = ''
+    topics = []
     group_id = ''
     rabbitmq = None
     consumer = None
@@ -22,11 +22,12 @@ class ErrorConsumerService:
     def __init__(self,
                  host=os.getenv("KAFKA_HOST"),
                  port=os.getenv("KAFKA_PORT"),
-                 topic=os.getenv("KAFKA_LOG_TOPIC"),
+                 log_topic=os.getenv("KAFKA_LOG_TOPIC"),
+                 link_topic=os.getenv("KAFKA_LINK_TOPIC"),
                  group_id=os.getenv("KAFKA_GROUP_ID")
                  ):
         self.bootstrap_servers = f'{host}:{port}'
-        self.topic = topic
+        self.topics = [log_topic, link_topic]
         self.group_id = group_id
         self.__set_kafka__()
         self.__set_rabbitmq__()
@@ -59,11 +60,13 @@ class ErrorConsumerService:
 
     def __set_kafka__(self):
         self.consumer = KafkaConsumer(
-            self.topic,
             bootstrap_servers=self.bootstrap_servers,
             group_id=None, # 추후 변경
             auto_offset_reset='latest',
             enable_auto_commit=True,
             value_deserializer=lambda m: json.loads(m.decode('utf-8'))
         )
+
+        self.consumer.subscribe(self.topics)
+
 

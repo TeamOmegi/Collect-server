@@ -1,0 +1,25 @@
+version: '3'
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ./.docker/rabbitmq/etc/:/etc/rabbitmq/
+      - ./.docker/rabbitmq/data/:/var/lib/rabbitmq/
+      - ./.docker/rabbitmq/logs/:/var/log/rabbitmq/
+    networks:
+      - omegi-net
+    environment:
+      - RABBITMQ_DEFAULT_USER="omegi"
+      - RABBITMQ_DEFAULT_PASS="omegi"
+    restart: always
+
+volumes:
+  rabbitmq_data:
+
+networks:
+  test-net:
+    external: true
