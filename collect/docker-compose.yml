@@ -7,7 +7,7 @@ services:
     networks:
       - omegi-net
     ports:
-      - "8085:8085"
+      - "8051:8051"
 
 networks:
   omegi-net:
