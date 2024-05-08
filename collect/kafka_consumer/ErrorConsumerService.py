@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import os
 
 from rabbit_mq.RabbitMqService import RabbitMQSender
-from service import ErrorLogService
+from service import ConsumerLogProcessor
 from auth import JwtService
 
 
@@ -36,16 +36,20 @@ class ErrorConsumerService:
         try:
             for message in self.consumer:
                 print(f"Received message: {message.value}", flush=True)
-                # TODO 로그 토큰 인증
-                JwtService.decode_token("dd")
-
-                # TODO MongoDB 데이터 저장 (MongoDB, 데이터 형식 수정)
-                ErrorLogService.insert_error_log(message.value)
-
-                # TODO 서버 흐름도 데이터 가공, 저장 (MySql)
-
-                # TODO spring boot에 알림 전송
-                self.rabbitmq.publish_message(json.dumps(message.value))
+                # 1. 로그 토큰 인증 (project, service id 받기)
+                project_id, service_id  = JwtService.get_payload_from_token(message.value['token'])
+                if service_id is not None and project_id is not None:
+                    # 2. 에러 포함 로그인지 확인
+                    # 2.1 에러 로그: 지금까지 모인 trace 조회, 가공
+                    if message.value['error']:
+                        processed_traces = ConsumerLogProcessor.process_error(message.value, project_id,service_id)
+                        # 3. MondoDB 저장
+                        ConsumerLogProcessor.insert_to_mongodb(processed_traces)
+                        # 4. RabbitMQ 데이터 전송
+                        self.rabbitmq.publish_message(json.dumps(message.value))
+                    # 2.2 에러 로그 아님: project, service id 추가 후 elasticsearch
+                    else:
+                        ConsumerLogProcessor.insert_to_elasticsearch(message.value)
         except KeyboardInterrupt:
             print("Aborted by user...", flush=True)
             # 재연결 로직이 필요한가?

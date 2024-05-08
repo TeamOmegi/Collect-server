@@ -1,10 +1,15 @@
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel
+
+from dto.Trace import TraceSpan
 
 
 class ErrorLog(BaseModel):
-    project: str
-    service: str
+    project: int
+    service: int
+    trace: List[TraceSpan]
+    type: str
+    summary: str
     log: str
 
     def to_dict(self):

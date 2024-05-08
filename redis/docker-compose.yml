@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  redis-que:
+    container_name: redis-que
+    image: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - omegi-net
+
+volumes:
+  redis_data:
+
+networks:
+  omegi-net:
+    external: true

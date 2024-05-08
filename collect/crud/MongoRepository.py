@@ -1,5 +1,5 @@
 from database import MongoDbClient
-from entity import ErrorLog
+from dto import ErrorLog
 
 mongo_client = MongoDbClient.get_mongo_client()
 
