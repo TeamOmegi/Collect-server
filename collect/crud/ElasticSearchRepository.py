@@ -94,8 +94,7 @@ def find_parent_span_id(project_id, service_id, span_id):
                     ]
                 }
             }
-        },
-        lenient=True
+        }
     )
     if result['hits']['total']['value'] > 0:
         return result['hits']['hits'][0]['_source'][0]
