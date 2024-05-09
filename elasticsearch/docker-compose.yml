@@ -7,6 +7,9 @@ services:
       - discovery.type=single-node
       - xpack.security.enabled=true
       - ELASTIC_PASSWORD=ssafy308
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g" 
+      - xpack.watcher.enabled=false 
+      - xpack.ml.enabled=false 
     ports:
       - 9200:9200
     networks:
