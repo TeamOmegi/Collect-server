@@ -17,7 +17,7 @@ def insert(data):
     )
 
 
-def find_by_trace_id_must_error(trace_id, project_id, service_id):
+def find_by_trace_id_must_error(trace_id: str, project_id, service_id):
     result = elastic_client.search(
         index=os.getenv('ELASTICSEARCH_INDEX'),
         body={
@@ -26,7 +26,7 @@ def find_by_trace_id_must_error(trace_id, project_id, service_id):
               "must": [
                 {
                     "match": {
-                        "traceId": trace_id
+                        "traceId.keyword": trace_id
                     }
                 },
                 {
@@ -77,7 +77,7 @@ def find_parent_span_id(project_id, service_id, span_id: str):
                                 "path": "spans",
                                 "query": {
                                     "match": {
-                                        "spans.spanId": span_id
+                                        "spans.spanId.keyword": span_id
                                     }
                                 },
                                 "inner_hits": {
