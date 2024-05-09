@@ -77,7 +77,7 @@ def find_parent_span_id(project_id, service_id, span_id):
                                 "path": "spans",
                                 "query": {
                                     "match": {
-                                        "spans.spanId": span_id
+                                        "spans.spanId": str(span_id)
                                     }
                                 },
                                 "inner_hits": {
