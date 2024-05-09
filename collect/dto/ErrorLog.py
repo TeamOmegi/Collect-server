@@ -6,8 +6,8 @@ from dto.Trace import TraceSpan
 
 
 class ErrorLog(BaseModel):
-    project: int
-    service: int
+    project_id: int
+    service_id: int
     trace: List[TraceSpan]
     type: str
     summary: str
