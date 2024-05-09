@@ -84,8 +84,6 @@ def _process_spans(traces):
     for trace in traces:
         service_name = trace['serviceName']
         for span in trace['spans']:
-            enter_time = datetime.strptime(span['spanEnterTime'], "%Y-%m-%d %H:%M:%S.%f")
-            exit_time = datetime.strptime(span['spanExitTime'], "%Y-%m-%d %H:%M:%S.%f")
             spans.append(
                 TraceSpan(
                     span_id=span['spanId'],
@@ -94,8 +92,8 @@ def _process_spans(traces):
                     parent_span_id=span['parentSpanId'],
                     kind=span['kind'],
                     attributes=span['attributes'],
-                    enter_time=enter_time,
-                    exit_time=exit_time
+                    enter_time=span['spanEnterTime'],
+                    exit_time=span['spanExitTime']
                 ))
     return spans
 
