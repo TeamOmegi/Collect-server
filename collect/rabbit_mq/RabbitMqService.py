@@ -1,4 +1,5 @@
 import json
+import logging
 
 import pika
 import os
@@ -9,6 +10,7 @@ load_dotenv()
 
 class RabbitMQSender:
     def __init__(self, host=os.getenv('RABBITMQ_HOST'), queue_name=os.getenv('RABBITMQ_QUEUE')):
+        logging.warning(f'RabbitMQSender: {os.getenv("RABBITMQ_HOST")}, {os.getenv("RABBITMQ_QUEUE")}')
         self.host = host
         self.queue_name = queue_name
         self.connection = None
