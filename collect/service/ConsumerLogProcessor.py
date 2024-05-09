@@ -1,4 +1,5 @@
 import json
+import logging
 from datetime import datetime
 from typing import List
 
@@ -44,7 +45,7 @@ def _find_all_trace_from_elasticsearch(error_trace, project_id, service_id) -> L
     traces = []
     current_trace = error_trace
     while True:
-        traces.insert(0,current_trace)
+        traces.insert(0, current_trace)
         parent_trace_id = current_trace['spans'][-1]['parentSpanId']
         if parent_trace_id == 0000000000000000 or parent_trace_id is None:
             break
@@ -52,6 +53,7 @@ def _find_all_trace_from_elasticsearch(error_trace, project_id, service_id) -> L
         if found_trace is None:
             return None
         current_trace = found_trace
+    logging.info(f'Found traces from Elasticsearch {traces}')
     return traces
 
 

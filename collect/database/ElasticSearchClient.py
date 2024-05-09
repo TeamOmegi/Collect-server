@@ -9,8 +9,8 @@ load_dotenv()
 
 def get_database():
     elasticsearch_url = f"http://{os.getenv('ELASTICSEARCH_HOST')}:{os.getenv('ELASTICSEARCH_PORT')}"
-    logging.warning(f'Connecting to Elasticsearch: {elasticsearch_url}')
-    logging.warning(f'Password: {os.getenv("ELASTICSEARCH_PASSWORD")}')
+    logging.info(f'Connecting to Elasticsearch: {elasticsearch_url}')
+    logging.info(f'Password: {os.getenv("ELASTICSEARCH_PASSWORD")}')
     client = Elasticsearch(
         [elasticsearch_url],
         basic_auth=('elastic', os.getenv('ELASTICSEARCH_PASSWORD'))

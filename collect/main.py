@@ -1,11 +1,11 @@
 import logging
+logging.basicConfig(level=logging.INFO)
 
 from dotenv import load_dotenv
 from kafka_consumer.ErrorConsumerService import ErrorConsumerService
 
 load_dotenv()
 print("Starting Collect-server", flush=True)
-logging.basicConfig(level=logging.INFO)
 
 
 def run():
