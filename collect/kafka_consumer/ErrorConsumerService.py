@@ -26,7 +26,7 @@ class ErrorConsumerService:
         self.topics = [os.getenv("KAFKA_LOG_TOPIC")]
         self.group_id = os.getenv("KAFKA_GROUP_ID")
         self.__set_kafka__()
-        # self.__set_rabbitmq__()
+        self.__set_rabbitmq__()
 
     def activate_listener(self):
         try:
@@ -55,10 +55,9 @@ class ErrorConsumerService:
                         logging.info(f'ElasticSearch save finished')
         except KeyboardInterrupt:
             print("Aborted by user...", flush=True)
-            # 재연결 로직이 필요한가?
         finally:
             self.consumer.close()
-            # self.rabbitmq.close_connection()
+            self.rabbitmq.close_connection()
 
     def __process_all_traces__(self, message, project_id, service_id):
         logging.info(f'Processing trace started')
