@@ -17,8 +17,7 @@ class RabbitMQSender:
         self.channel = None
 
     def connect(self):
-        credentials = pika.PlainCredentials(os.getenv('RABBITMQ_DEFAULT_USER'), os.getenv('RABBITMQ_DEFAULT_PASS'))
-        self.connection = pika.BlockingConnection(pika.ConnectionParameters(self.host, credentials=credentials))
+        self.connection = pika.BlockingConnection(pika.ConnectionParameters(self.host))
         self.channel = self.connection.channel()
 
     def declare_queue(self):
