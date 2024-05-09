@@ -76,8 +76,14 @@ def find_parent_span_id(project_id, service_id, span_id):
                             "nested": {
                                 "path": "spans",
                                 "query": {
-                                    "match": {
-                                        "spans.spanId": str(span_id)
+                                    "bool": {
+                                        "must": [
+                                            {
+                                                "match": {
+                                                    "spans.spanId": span_id
+                                                }
+                                            }
+                                        ]
                                     }
                                 },
                                 "inner_hits": {
@@ -87,7 +93,8 @@ def find_parent_span_id(project_id, service_id, span_id):
                         }
                     ]
                 }
-            }
+            },
+            "lenient": True
         }
     )
     if result['hits']['total']['value'] > 0:
