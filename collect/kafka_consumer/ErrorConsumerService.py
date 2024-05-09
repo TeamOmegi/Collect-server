@@ -26,7 +26,7 @@ class ErrorConsumerService:
         self.topics = [os.getenv("KAFKA_LOG_TOPIC")]
         self.group_id = os.getenv("KAFKA_GROUP_ID")
         self.__set_kafka__()
-        self.__set_rabbitmq__()
+        # self.__set_rabbitmq__()
 
     def activate_listener(self):
         try:
@@ -46,7 +46,7 @@ class ErrorConsumerService:
                         mysql_error_id = self.__save_to_mysql__(processed_traces, mongo_result_id)
                         # 5. RabbitMQ 데이터 전송
                         logging.info(f'Sending Message to RabbitMQ: {mysql_error_id}')
-                        self.rabbitmq.publish_message(mysql_error_id)
+                        # self.rabbitmq.publish_message(mysql_error_id)
                         logging.info(f'Sent Message to RabbitMQ: {mysql_error_id}')
                     # 2.2 에러 로그 아님: project, service id 추가 후 elasticsearch
                     else:
