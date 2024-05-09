@@ -19,7 +19,12 @@ def get_database():
         "mappings": {
             "properties": {
                 "spans": {
-                    "type": "object"
+                    "type": "object",
+                    "properties": {
+                        "spanId": {
+                            "type": "keyword"
+                        }
+                    }
                 }
             }
         }
