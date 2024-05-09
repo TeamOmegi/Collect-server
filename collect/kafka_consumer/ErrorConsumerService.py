@@ -23,7 +23,7 @@ class ErrorConsumerService:
     def __init__(self):
         self.bootstrap_servers = [f'{os.getenv("KAFKA_HOST_1")}:{os.getenv("KAFKA_PORT")}',
                                   f'{os.getenv("KAFKA_HOST_2")}:{os.getenv("KAFKA_PORT")}']
-        self.topics = [os.getenv("KAFKA_LOG_TOPIC"), os.getenv("KAFKA_LINK_TOPIC")]
+        self.topics = [os.getenv("KAFKA_LOG_TOPIC")]
         self.group_id = os.getenv("KAFKA_GROUP_ID")
         self.__set_kafka__()
         # self.__set_rabbitmq__()
