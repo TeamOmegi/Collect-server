@@ -43,7 +43,7 @@ class ErrorConsumerService:
                         # 3. MondoDB 저장
                         mongo_result_id = self.__save_to_mongodb__(processed_traces)
                         # 4. MySQL 저장
-                        mysql_result = self.__save_to_mysql__(processed_traces, mongo_result_id)
+                        mysql_error_id = self.__save_to_mysql__(processed_traces, mongo_result_id)
                         # 5. RabbitMQ 데이터 전송
                         # self.rabbitmq.publish_message(error_id)
                     # 2.2 에러 로그 아님: project, service id 추가 후 elasticsearch
@@ -72,9 +72,9 @@ class ErrorConsumerService:
 
     def __save_to_mysql__(self, error, mongo_id):
         logging.info(f'Saving to MySql')
-        error_result = ConsumerLogProcessor.insert_to_mysql(error, mongo_id)
-        logging.info(f'Saved to MySql Error {error_result}')
-        return error_result
+        error_id = ConsumerLogProcessor.insert_to_mysql(error, mongo_id)
+        logging.info(f'Saved to MySql Error {error_id}')
+        return error_id
 
     def __set_rabbitmq__(self):
         self.rabbitmq = RabbitMQSender()

@@ -30,8 +30,8 @@ def insert_to_mysql(data: ErrorLog, mongo_id: str):
         time=data.time,
     )
 
-    insert = MySqlRespository.insert(error, MySqlClient.get_database())
-    return insert.error_id
+    error_id = MySqlRespository.insert(error, MySqlClient.get_database())
+    return error_id
 
 
 def process_error(error_trace, project_id, service_id) -> ErrorLog:
