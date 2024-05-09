@@ -41,6 +41,7 @@ def process_work(work: Work) -> bool:
         return False
     # 6. RabbidMq 전송
     __send_to_rabbitmq(mysql_error_id)
+    return True
 
 
 def __get_error_trace(data: Work):
