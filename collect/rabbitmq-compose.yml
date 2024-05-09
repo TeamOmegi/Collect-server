@@ -8,18 +8,16 @@ services:
       - "15672:15672"
     volumes:
       - ./.docker/rabbitmq/etc/:/etc/rabbitmq/
-      - ./.docker/rabbitmq/data/:/var/lib/rabbitmq/
-      - ./.docker/rabbitmq/logs/:/var/log/rabbitmq/
     networks:
       - omegi-net
     environment:
       - RABBITMQ_DEFAULT_USER="omegi"
-      - RABBITMQ_DEFAULT_PASS="ssafy"
+      - RABBITMQ_DEFAULT_PASS="ssafy308@omegi"
     restart: always
 
 volumes:
   rabbitmq_data:
 
 networks:
-  test-net:
+  omegi-net:
     external: true
