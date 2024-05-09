@@ -7,6 +7,7 @@ def insert(error: Error, session: Session) -> Error:
     session.add(error)
     session.flush()
     session.refresh(error)
+    session.commit()
     return error
 
 
