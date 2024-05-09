@@ -47,6 +47,7 @@ def _find_all_trace_from_elasticsearch(error_trace, project_id, service_id) -> L
     while True:
         traces.insert(0, current_trace)
         parent_trace_id = current_trace['spans'][-1]['parentSpanId']
+        logging.warning(f'parent_trace_id: {parent_trace_id}')
         if parent_trace_id == 0000000000000000 or parent_trace_id is None:
             break
         found_trace = ElasticSearchRepository.find_parent_span_id(parent_trace_id, project_id, service_id)
