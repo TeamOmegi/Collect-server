@@ -19,7 +19,7 @@ def get_database():
         "mappings": {
             "properties": {
                 "spans": {
-                    "type": "nested"
+                    "type": "object"
                 }
             }
         }

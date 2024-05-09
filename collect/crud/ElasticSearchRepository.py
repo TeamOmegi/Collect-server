@@ -73,22 +73,8 @@ def find_parent_span_id(project_id, service_id, span_id):
                             }
                         },
                         {
-                            "nested": {
-                                "path": "spans",
-                                "query": {
-                                    "bool": {
-                                        "must": [
-                                            {
-                                                "match": {
-                                                    "spans.spanId": span_id
-                                                }
-                                            }
-                                        ]
-                                    }
-                                },
-                                "inner_hits": {
-                                    "_source": True
-                                }
+                            "match": {
+                                "spans.spanId": span_id
                             }
                         }
                     ]
