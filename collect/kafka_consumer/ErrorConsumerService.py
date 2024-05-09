@@ -45,7 +45,9 @@ class ErrorConsumerService:
                         # 4. MySQL 저장
                         mysql_error_id = self.__save_to_mysql__(processed_traces, mongo_result_id)
                         # 5. RabbitMQ 데이터 전송
+                        logging.info(f'Sending Message to RabbitMQ: {mysql_error_id}')
                         self.rabbitmq.publish_message(mysql_error_id)
+                        logging.info(f'Sent Message to RabbitMQ: {mysql_error_id}')
                     # 2.2 에러 로그 아님: project, service id 추가 후 elasticsearch
                     else:
                         logging.info(f'None error message received')
