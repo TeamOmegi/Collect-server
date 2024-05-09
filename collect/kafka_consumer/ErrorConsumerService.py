@@ -85,7 +85,7 @@ class ErrorConsumerService:
     def __set_kafka__(self):
         self.consumer = KafkaConsumer(
             bootstrap_servers=self.bootstrap_servers,
-            group_id=None, # 추후 변경
+            group_id=os.getenv('KAFKA_GROUP_ID'),
             auto_offset_reset='latest',
             enable_auto_commit=True,
             value_deserializer=lambda m: json.loads(m.decode('utf-8'))
