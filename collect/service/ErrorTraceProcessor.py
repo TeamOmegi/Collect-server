@@ -2,12 +2,18 @@ import logging
 from datetime import datetime
 from typing import List
 
+from rabbit_mq.RabbitMqService import RabbitMQSender
 from crud import ElasticSearchRepository, MongoRepository, MySqlRespository
 from database import MySqlClient
+
 from dto.ErrorLog import ErrorLog
 from dto.Trace import TraceSpan
 from dto.Work import Work
 from entity.Error import Error
+
+rabbitmq = RabbitMQSender()
+rabbitmq.connect()
+rabbitmq.declare_queue()
 
 
 def process_work(work: Work) -> bool:
@@ -34,6 +40,7 @@ def process_work(work: Work) -> bool:
     if mysql_error_id is None:
         return False
     # 6. RabbidMq 전송
+    __send_to_rabbitmq(mysql_error_id)
 
 
 def __get_error_trace(data: Work):
@@ -102,9 +109,14 @@ def __insert_to_mysql(data: ErrorLog, mongo_id: str) -> object:
         summary=data.summary,
         time=data.time,
     )
-
     error_id = MySqlRespository.insert(error, MySqlClient.get_database())
     return error_id
+
+
+def __send_to_rabbitmq(data: int):
+    logging.info(f'[ErrorTraceProcessor] __send_to_rabbitmq -> START: {data}')
+    result = rabbitmq.publish_message(data)
+    logging.info(f'[ErrorTraceProcessor] __send_to_rabbitmq -> END: {result}')
 
 
 def __get_error_metadata__(traces) -> tuple | None:
