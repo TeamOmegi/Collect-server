@@ -39,7 +39,7 @@ class ErrorConsumerService:
                     # 2.1 에러 로그: 지금까지 모인 trace 조회, 가공
                     if message.value['error']:
                         logging.info(f'Error message received')
-                        processed_traces = self.__process_all_traces__(message, 8, 2)
+                        processed_traces = self.__process_all_traces__(message, project_id, service_id)
                         # 3. MondoDB 저장
                         mongo_result = self.__save_to_mongodb__(processed_traces)
                         # 4. MySQL 저장
@@ -60,7 +60,7 @@ class ErrorConsumerService:
 
     def __process_all_traces__(self, message, project_id, service_id):
         logging.info(f'Processing trace started')
-        processed_traces = ConsumerLogProcessor.process_error(message.value, project_id, service_id)
+        processed_traces = ConsumerLogProcessor.process_error(error_trace=message.value, project_id=project_id, service_id=service_id)
         logging.info(f'Processed trace {processed_traces}')
         return processed_traces
 
