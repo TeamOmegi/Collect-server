@@ -66,6 +66,7 @@ def _process_traces(traces, project_id, service_id) -> ErrorLog:
         error_type, summary, log = processed_error[0]
     else:
         error_type, summary, log = None, None, None
+    logging.info(f'Processed traces from Elasticsearch {project_id}, {service_id}')
     return ErrorLog(
         project_id=project_id,
         service_id=service_id,
