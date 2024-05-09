@@ -32,7 +32,10 @@ class RabbitMQSender:
 
         json_body = json.dumps(body)
 
-        self.channel.basic_publish(exchange='', routing_key=self.queue_name, body=json_body)
+        publish = self.channel.basic_publish(exchange='', routing_key=self.queue_name, body=json_body)
+        logging.info(json_body)
+        logging.warning(publish)
+
 
     def close_connection(self):
         if self.connection:
