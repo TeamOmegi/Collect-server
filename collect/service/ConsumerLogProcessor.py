@@ -37,7 +37,7 @@ def process_error(error_trace, project_id, service_id) -> ErrorLog:
     if traces is None:
         # To Redis
         return None
-    return _process_traces(traces)
+    return _process_traces(traces, project_id, service_id)
 
 
 # 1. ElasticSearch에서 연결된 trace 모두 찾아오기
