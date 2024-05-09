@@ -39,13 +39,11 @@ class ErrorConsumerService:
                     # 2.1 에러 로그: 지금까지 모인 trace 조회, 가공
                     if message.value['error']:
                         logging.info(f'Error message received')
-                        processed_traces = ConsumerLogProcessor.process_error(message.value, project_id,service_id)
-                        logging.info(f'Processed trace {processed_traces}')
+                        processed_traces = self.__process_all_traces__(message, project_id, service_id)
                         # 3. MondoDB 저장
-                        ConsumerLogProcessor.insert_to_mongodb(processed_traces)
-                        logging.info(f'Saved to Mongo')
+                        mongo_result = self.__save_to_mongodb__(processed_traces)
                         # 4. MySQL 저장
-                        # error_id = ConsumerLogProcessor.insert_to_mysql(processed_traces)
+                        mysql_result = self.__save_to_mysql__(processed_traces)
                         # 5. RabbitMQ 데이터 전송
                         # self.rabbitmq.publish_message(error_id)
                     # 2.2 에러 로그 아님: project, service id 추가 후 elasticsearch
@@ -59,6 +57,24 @@ class ErrorConsumerService:
         finally:
             self.consumer.close()
             # self.rabbitmq.close_connection()
+
+    def __process_all_traces__(self, message, project_id, service_id):
+        logging.info(f'Processing trace started')
+        processed_traces = ConsumerLogProcessor.process_error(message.value, project_id, service_id)
+        logging.info(f'Processed trace {processed_traces}')
+        return processed_traces
+
+    def __save_to_mongodb__(self, processed_traces):
+        logging.info(f'Saving to Mongo')
+        result = ConsumerLogProcessor.insert_to_mongodb(processed_traces)
+        logging.info(f'Saved to Mongo')
+        return result
+
+    def __save_to_mysql__(self, error):
+        logging.info(f'Saving to MySql')
+        error_result = ConsumerLogProcessor.insert_to_mysql(error)
+        logging.info(f'Saved to MySql Error {error_result}')
+        return error_result
 
     def __set_rabbitmq__(self):
         self.rabbitmq = RabbitMQSender()

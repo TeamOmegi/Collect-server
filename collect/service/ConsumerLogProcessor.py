@@ -18,6 +18,7 @@ def insert_to_elasticsearch(data, project_id, service_id):
 def insert_to_mongodb(data: ErrorLog):
     MongoRepository.insert(data)
 
+
 def insert_to_mysql(data: ErrorLog):
     error = Error(
         service_id=data.service_id,
