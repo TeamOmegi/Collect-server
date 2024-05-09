@@ -60,10 +60,3 @@ def create_jwt_for_service(service_id, expiration_ms):
     token = jwt.encode(payload, secret_key, algorithm="HS256")
     return token
 
-
-token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJTZXJ2aWNlVG9rZW4iLCJwcm9qZWN0SWQiOjgsInNlcnZpY2VJZCI6MiwiaWF0IjoxNzE1MTY2NzM0LCJleHAiOjIwMzA1MjY3MzR9.BN2FctT1WJUyJZoFW_IrQtAkVB1wqc8vsi4MtBjlaww'
-print(decode_token(token))
-
-origin_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJTZXJ2aWNlVG9rZW4iLCJwcm9qZWN0SWQiOjgsInNlcnZpY2VJZCI6MiwiaWF0IjoxNzE1MTY2NzM0LCJleHAiOjIwMzA1MjY3MzR9.oKJenUKkyTR47cMZnpmY6OBO5MQGpMSU3r1g0QhEeZU'
-print(decode_token(origin_token))
-
