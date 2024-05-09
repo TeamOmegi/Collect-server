@@ -59,23 +59,7 @@ class ErrorConsumerService:
             self.consumer.close()
             self.rabbitmq.close_connection()
 
-    def __process_all_traces__(self, message, project_id, service_id):
-        logging.info(f'Processing trace started')
-        processed_traces = ConsumerLogProcessor.process_error(error_trace=message.value, project_id=project_id, service_id=service_id)
-        logging.info(f'Processed trace {processed_traces}')
-        return processed_traces
 
-    def __save_to_mongodb__(self, processed_traces):
-        logging.info(f'Saving to Mongo')
-        result = ConsumerLogProcessor.insert_to_mongodb(processed_traces)
-        logging.info(f'Saved to Mongo mongo_id: {result}')
-        return result
-
-    def __save_to_mysql__(self, error, mongo_id):
-        logging.info(f'Saving to MySql')
-        error_id = ConsumerLogProcessor.insert_to_mysql(error, mongo_id)
-        logging.info(f'Saved to MySql Error {error_id}')
-        return error_id
 
     def __set_rabbitmq__(self):
         self.rabbitmq = RabbitMQSender()
