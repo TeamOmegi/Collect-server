@@ -79,10 +79,10 @@ def _process_traces(traces, project_id, service_id) -> ErrorLog:
 def _process_spans(traces):
     spans = []
     for trace in traces:
-        service_name = trace['service-name']
+        service_name = trace['serviceName']
         for span in trace['spans']:
-            enter_time = datetime.strptime(span['span enter-time'], "%Y-%m-%d %H:%M:%S.%f")
-            exit_time = datetime.strptime(span['span exit-time'], "%Y-%m-%d %H:%M:%S.%f")
+            enter_time = datetime.strptime(span['spanEnterTime'], "%Y-%m-%d %H:%M:%S.%f")
+            exit_time = datetime.strptime(span['spanExitTime'], "%Y-%m-%d %H:%M:%S.%f")
             spans.append(
                 TraceSpan(
                     span_id=span['spanId'],
