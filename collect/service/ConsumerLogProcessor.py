@@ -3,8 +3,10 @@ from datetime import datetime
 from typing import List
 
 from dto.ErrorLog import ErrorLog
-from crud import ElasticSearchRepository as ElasticSearchRepository, MongoRepository
+from crud import ElasticSearchRepository as ElasticSearchRepository, MongoRepository, MySqlRespository
 from dto.Trace import TraceSpan
+from entity.Error import Error
+from database import  MySqlClient
 
 
 def insert_to_elasticsearch(data, project_id, service_id):
@@ -15,6 +17,17 @@ def insert_to_elasticsearch(data, project_id, service_id):
 
 def insert_to_mongodb(data: ErrorLog):
     MongoRepository.insert(data)
+
+def insert_to_mysql(data: ErrorLog):
+    error = Error(
+        service_id=data.service_id,
+        type=data.error_type,
+        summary=data.summary,
+        time=data.time,
+    )
+
+    insert = MySqlRespository.insert(error, MySqlClient.get_database())
+    return insert.error_id
 
 
 def process_error(error_trace, project_id, service_id) -> ErrorLog:
@@ -54,6 +67,7 @@ def _process_traces(traces, project_id, service_id) -> ErrorLog:
         trace=_process_spans(traces),
         error_type=error_type,
         summary=summary,
+        time=datetime.now(),
         log=log
     )
 

@@ -6,7 +6,7 @@ from entity.Base import Base
 
 class Error(Base):
     __tablename__ = 'error'
-    error_id = Column(Integer, primary_key=True)
+    error_id = Column(Integer, primary_key=True, autoincrement=True)
     note_id = Column(Integer, nullable=True)
     service_id = Column(Integer, nullable=False)
     type = Column(String(255), nullable=False)

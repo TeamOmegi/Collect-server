@@ -19,9 +19,13 @@ class RabbitMQSender:
     def declare_queue(self):
         self.channel.queue_declare(queue=self.queue_name)
 
-    def publish_message(self, message):
-        self.channel.basic_publish(exchange='', routing_key=self.queue_name, body=message)
-        print("Sent message: %s" % message)
+    def publish_message(self, error_id):
+
+        body = {
+            "error_id": error_id,
+        }
+
+        self.channel.basic_publish(exchange='', routing_key=self.queue_name, body=str(body))
 
     def close_connection(self):
         if self.connection:

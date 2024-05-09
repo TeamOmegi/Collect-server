@@ -45,8 +45,10 @@ class ErrorConsumerService:
                         processed_traces = ConsumerLogProcessor.process_error(message.value, project_id,service_id)
                         # 3. MondoDB 저장
                         ConsumerLogProcessor.insert_to_mongodb(processed_traces)
-                        # 4. RabbitMQ 데이터 전송
-                        self.rabbitmq.publish_message(json.dumps(message.value))
+                        # 4. MySQL 저장
+                        error_id = ConsumerLogProcessor.insert_to_mysql(processed_traces)
+                        # 5. RabbitMQ 데이터 전송
+                        self.rabbitmq.publish_message(error_id)
                     # 2.2 에러 로그 아님: project, service id 추가 후 elasticsearch
                     else:
                         ConsumerLogProcessor.insert_to_elasticsearch(message.value)

@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional, List
 from pydantic import BaseModel
 
@@ -10,6 +11,7 @@ class ErrorLog(BaseModel):
     trace: List[TraceSpan]
     type: str
     summary: str
+    time: datetime
     log: str
 
     def to_dict(self):

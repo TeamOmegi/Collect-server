@@ -14,7 +14,7 @@ services:
       - omegi-net
     environment:
       - RABBITMQ_DEFAULT_USER="omegi"
-      - RABBITMQ_DEFAULT_PASS="omegi"
+      - RABBITMQ_DEFAULT_PASS="ssafy"
     restart: always
 
 volumes:
