@@ -8,8 +8,6 @@ services:
       - "15672:15672"
     volumes:
       - ./.docker/rabbitmq/etc/:/etc/rabbitmq/
-      - ./.docker/rabbitmq/data/:/var/lib/rabbitmq/
-      - ./.docker/rabbitmq/logs/:/var/log/rabbitmq/
     networks:
       - omegi-net
     environment:
@@ -21,5 +19,5 @@ volumes:
   rabbitmq_data:
 
 networks:
-  test-net:
+  omegi-net:
     external: true

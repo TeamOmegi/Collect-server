@@ -1,3 +1,5 @@
+import json
+
 import pika
 import os
 from dotenv import load_dotenv
@@ -25,7 +27,9 @@ class RabbitMQSender:
             "error_id": error_id,
         }
 
-        self.channel.basic_publish(exchange='', routing_key=self.queue_name, body=str(body))
+        json_body = json.dumps(body)
+
+        self.channel.basic_publish(exchange='', routing_key=self.queue_name, body=json_body)
 
     def close_connection(self):
         if self.connection:
