@@ -9,16 +9,17 @@ load_dotenv()
 
 
 class RabbitMQSender:
-    def __init__(self, host=os.getenv('RABBITMQ_HOST'), queue_name=os.getenv('RABBITMQ_QUEUE')):
+    def __init__(self, host=os.getenv('RABBITMQ_HOST'), port=os.getenv('RABBITMQ_PORT'), queue_name=os.getenv('RABBITMQ_QUEUE')):
         logging.warning(f'RabbitMQSender: {os.getenv("RABBITMQ_HOST")}, {os.getenv("RABBITMQ_QUEUE")}')
         self.host = host
+        self.port = port
         self.queue_name = queue_name
         self.connection = None
         self.channel = None
 
     def connect(self):
-        credentials = pika.PlainCredentials(os.getenv('RABBITMQ_USER'), os.getenv('RABBITMQ_PASS'))
-        self.connection = pika.BlockingConnection(pika.ConnectionParameters(self.host, credentials=credentials))
+        credentials = pika.PlainCredentials(username=os.getenv('RABBITMQ_USER'), password=os.getenv('RABBITMQ_PASS'))
+        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=self.host, port=self.port, credentials=credentials))
         self.channel = self.connection.channel()
 
     def declare_queue(self):
