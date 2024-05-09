@@ -63,7 +63,7 @@ def __find_all_trace_from_elasticsearch(data: Work) -> List | None:
         parent_trace_id = current_trace['spans'][-1]['parentSpanId']
         if parent_trace_id == '0000000000000000' or parent_trace_id is None:
             break
-        found_trace = ElasticSearchRepository.find_parent_span_id(parent_trace_id, data.project_id, data.service_id)
+        found_trace = ElasticSearchRepository.find_parent_span_id(data.project_id, data.service_id, parent_trace_id)
         if found_trace is None:
             logging.warning(f'[ErrorTraceProcessor] __find_all_trace_from_elasticsearch -> PROBLEM trace not found: {data}')
             return None

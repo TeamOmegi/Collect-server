@@ -99,4 +99,4 @@ def find_parent_span_id(project_id, service_id, span_id):
     else:
         return None
 
-# print(find_parent_span_id(8, 2, '907762670dd00a63'))
+print(find_parent_span_id(8, 2, '907762670dd00a63'))
