@@ -9,5 +9,5 @@ class TraceSpan(BaseModel):
     parent_span_id: str
     kind: str
     attributes: dict
-    enter_time: datetime
-    exit_time: datetime
+    enter_time: str
+    exit_time: str
