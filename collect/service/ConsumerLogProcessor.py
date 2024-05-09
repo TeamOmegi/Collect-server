@@ -104,7 +104,7 @@ def _process_error(traces):
     for trace in traces:
         if trace['error']:
             error_type = trace['error']['exception.type']
-            summary = "\n".join(f"{key}: {value}" for key, value in list(trace['error']['exception.flow'].items())[:10])
+            summary = "\n".join(f"{key}: {value}" for key, value in list(trace['error']['exception.flow'].items())[:5])
             log = trace['error']['exception.stacktrace']
             processed_data.append((error_type, summary, log))
             break

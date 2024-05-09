@@ -67,7 +67,7 @@ class ErrorConsumerService:
     def __save_to_mongodb__(self, processed_traces):
         logging.info(f'Saving to Mongo')
         result = ConsumerLogProcessor.insert_to_mongodb(processed_traces)
-        logging.info(f'Saved to Mongo')
+        logging.info(f'Saved to Mongo {result}')
         return result
 
     def __save_to_mysql__(self, error):
