@@ -1,11 +1,19 @@
-
-# insert to Queue
-
-# poll from Queue
+from database.RedisClient import get_redis_client
+from dto.Work import Work
 
 
-# 바로 뽑는 큐
-# -> 5번 지나면 시간을 두는 큐로 이동
-# 시간을 좀 두는 큐
-# -> 횟수 초과되면 삭제
+redis_client = get_redis_client()
 
+
+def enqueue_data(data: Work, que_name):
+    data.error_trace = None
+    data.count += 1
+    data_json = data.json()
+    redis_client.rpush(que_name, data_json)
+
+
+def dequeue_data(que_name) -> Work:
+    data = redis_client.lpop(que_name)
+    if data:
+        return Work.parse_raw(data)
+    return None
