@@ -20,16 +20,11 @@ class ErrorConsumerService:
     rabbitmq = None
     consumer = None
 
-    def __init__(self,
-                 host=os.getenv("KAFKA_HOST"),
-                 port=os.getenv("KAFKA_PORT"),
-                 log_topic=os.getenv("KAFKA_LOG_TOPIC"),
-                 link_topic=os.getenv("KAFKA_LINK_TOPIC"),
-                 group_id=os.getenv("KAFKA_GROUP_ID")
-                 ):
-        self.bootstrap_servers = f'{host}:{port}'
-        self.topics = [log_topic, link_topic]
-        self.group_id = group_id
+    def __init__(self):
+        self.bootstrap_servers = [f'{os.getenv("KAFKA_HOST_1")}:{os.getenv("KAFKA_PORT")}',
+                                  f'{os.getenv("KAFKA_HOST_2")}:{os.getenv("KAFKA_PORT")}']
+        self.topics = [os.getenv("KAFKA_LOG_TOPIC"), os.getenv("KAFKA_LINK_TOPIC")]
+        self.group_id = os.getenv("KAFKA_GROUP_ID")
         self.__set_kafka__()
         # self.__set_rabbitmq__()
         self.logger = logging.getLogger('ErrorConsumerService')
