@@ -27,7 +27,6 @@ class ErrorConsumerService:
         self.group_id = os.getenv("KAFKA_GROUP_ID")
         self.__set_kafka__()
         # self.__set_rabbitmq__()
-        self.logger = logging.getLogger('ErrorConsumerService')
 
     def activate_listener(self):
         try:
@@ -39,21 +38,21 @@ class ErrorConsumerService:
                     # 2. 에러 포함 로그인지 확인
                     # 2.1 에러 로그: 지금까지 모인 trace 조회, 가공
                     if message.value['error']:
-                        logging.WARN(f'Error message received')
+                        logging.info(f'Error message received')
                         processed_traces = ConsumerLogProcessor.process_error(message.value, project_id,service_id)
-                        logging.WARN(f'Processed trace {processed_traces}')
+                        logging.info(f'Processed trace {processed_traces}')
                         # 3. MondoDB 저장
                         ConsumerLogProcessor.insert_to_mongodb(processed_traces)
-                        logging.WARN(f'Saved to Mongo')
+                        logging.info(f'Saved to Mongo')
                         # 4. MySQL 저장
                         # error_id = ConsumerLogProcessor.insert_to_mysql(processed_traces)
                         # 5. RabbitMQ 데이터 전송
                         # self.rabbitmq.publish_message(error_id)
                     # 2.2 에러 로그 아님: project, service id 추가 후 elasticsearch
                     else:
-                        logging.WARN(f'None error message received')
+                        logging.info(f'None error message received')
                         ConsumerLogProcessor.insert_to_elasticsearch(message.value)
-                        logging.WARN(f'ElasticSearch save finished')
+                        logging.info(f'ElasticSearch save finished')
         except KeyboardInterrupt:
             print("Aborted by user...", flush=True)
             # 재연결 로직이 필요한가?
