@@ -84,12 +84,6 @@ def _process_spans(traces):
         for span in trace['spans']:
             enter_time = datetime.strptime(span['spanEnterTime'], "%Y-%m-%d %H:%M:%S.%f")
             exit_time = datetime.strptime(span['spanExitTime'], "%Y-%m-%d %H:%M:%S.%f")
-            arguments = span['attributes']['arguments']
-            if isinstance(arguments, str):
-                try:
-                    arguments = json.loads(arguments)
-                except json.JSONDecodeError:
-                    arguments = ast.literal_eval(arguments)
             spans.append(
                 TraceSpan(
                     span_id=span['spanId'],
@@ -97,7 +91,7 @@ def _process_spans(traces):
                     name=span['name'],
                     parent_span_id=span['parentSpanId'],
                     kind=span['kind'],
-                    arguments=arguments,
+                    attributes=span['attributes'],
                     enter_time=enter_time,
                     exit_time=exit_time
                 ))

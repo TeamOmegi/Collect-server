@@ -9,6 +9,6 @@ class TraceSpan(BaseModel):
     name: str
     parent_span_id: str
     kind: str
-    arguments: List[str]
+    attributes: str
     enter_time: datetime
     exit_time: datetime
