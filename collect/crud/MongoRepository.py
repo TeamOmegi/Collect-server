@@ -5,5 +5,5 @@ mongo_client = MongoDbClient.get_mongo_client()
 
 
 def insert(log: ErrorLog):
-    mongo_client.insert_one(log.to_dict())
-    
+    result = mongo_client.insert_one(log.to_dict())
+    return str(result.inserted_id)

@@ -17,13 +17,14 @@ def insert_to_elasticsearch(data, project_id, service_id):
     ElasticSearchRepository.insert(data)
 
 
-def insert_to_mongodb(data: ErrorLog):
+def insert_to_mongodb(data: ErrorLog) -> str:
     return MongoRepository.insert(data)
 
 
-def insert_to_mysql(data: ErrorLog):
+def insert_to_mysql(data: ErrorLog, mongo_id: str):
     error = Error(
         service_id=data.service_id,
+        mongo_id=mongo_id,
         type=data.error_type,
         summary=data.summary,
         time=data.time,

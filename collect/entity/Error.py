@@ -10,6 +10,7 @@ class Error(Base):
     error_id = Column(Integer, primary_key=True, autoincrement=True)
     note_id = Column(Integer, nullable=True)
     service_id = Column(Integer, nullable=False)
+    mongo_id = Column(String(255), nullable=False)
     type = Column(String(255), nullable=False)
     summary = Column(MEDIUMTEXT, nullable=False)
     time = Column(TIMESTAMP, nullable=False)
