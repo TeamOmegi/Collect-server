@@ -1,3 +1,6 @@
+import logging
+logging.basicConfig(level=logging.INFO)
+
 from dotenv import load_dotenv
 from kafka_consumer.ErrorConsumerService import ErrorConsumerService
 

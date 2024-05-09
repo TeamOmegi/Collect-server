@@ -1,5 +1,4 @@
-from datetime import datetime
-from typing import Optional, List
+from bson import datetime
 from pydantic import BaseModel
 
 
@@ -9,6 +8,6 @@ class TraceSpan(BaseModel):
     name: str
     parent_span_id: str
     kind: str
-    arguments: List[str]
-    enter_time: datetime
-    exit_time: datetime
+    attributes: dict
+    enter_time: str
+    exit_time: str

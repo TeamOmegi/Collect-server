@@ -11,21 +11,15 @@ secret_key = os.getenv('JWT_SECRET')
 
 
 def decode_token(token: str) -> tuple:
-    print(token)
-    print(secret_key)
     try:
         secret_key_bytes = secret_key.encode('utf-8')
-        key = base64.b64decode(secret_key_bytes)
+        decoded = base64.b64decode(secret_key_bytes)
+        key = hashlib.sha256(decoded).digest()
 
-        decoded_token = jwt.decode(token=token, key=key, algorithms=['HS256'])
-        print(decoded_token)
-        print(decoded_token.get('projectId'))
-        print(decoded_token.get('serviceId'))
+        decoded_token = jwt.decode(token, key=decoded, algorithms=["HS256"], options={"verify_signature": True, "verify_aud": False, "verify_iat": False, "verify_exp": False, "verify_nbf": False, "verify_iss": False, "verify_sub": False, "require": []})
+        project_id = decoded_token.get("projectId")
+        service_id = decoded_token.get("serviceId")
 
-        project_id = decoded_token.get('projectId')
-        service_id = decoded_token.get('serviceId')
-
-        # 김아영 if문 고쳐 니가 해
         if service_id or project_id is None:
             print("Invalid token: Missing required claims")
             return None
@@ -65,11 +59,4 @@ def create_jwt_for_service(service_id, expiration_ms):
 
     token = jwt.encode(payload, secret_key, algorithm="HS256")
     return token
-
-
-token='eyJhbGciOiJIUzI1NiJ9.eyJwcm9qZWN0SWQiOjEsInNlcnZpY2VJZCI6MiwiaWF0IjoxNzE1MjIxNTY3fQ.NDDyWG6J1s2Kuadcc6bsLRx0eL8SPLzi4YxvwXYfSNQ'
-print(decode_token(token))
-
-origin_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJTZXJ2aWNlVG9rZW4iLCJwcm9qZWN0SWQiOjgsInNlcnZpY2VJZCI6MiwiaWF0IjoxNzE1MTY2NzM0LCJleHAiOjIwMzA1MjY3MzR9.oKJenUKkyTR47cMZnpmY6OBO5MQGpMSU3r1g0QhEeZU'
-print(decode_token(origin_token))
 
