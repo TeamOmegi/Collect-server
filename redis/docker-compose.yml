@@ -4,9 +4,11 @@ services:
   redis-que:
     container_name: redis-que
     image: redis
+    command: redis-server /usr/local/etc/redis/redis.conf
     ports:
       - "6380:6380"
     volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
       - redis_que_data:/data
     networks:
       - omegi-net
