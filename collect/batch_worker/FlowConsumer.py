@@ -57,7 +57,8 @@ class FlowConsumer:
                         FlowTraceProcessor.process_flow(raw_flow)
                     else:
                         index = os.getenv('ELASTICSEARCH_FLOW_INDEX')
-                        ElasticSearchRepository.insert_with_index(raw_flow, index)
+                        raw_flow_dict = raw_flow.dict()
+                        ElasticSearchRepository.insert_with_index(raw_flow_dict, index)
         except KeyboardInterrupt:
             print("Aborted by user...", flush=True)
         finally:

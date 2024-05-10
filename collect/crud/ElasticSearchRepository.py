@@ -128,6 +128,5 @@ def find_all_by_trace_id(trace_id):
         trace = hit["_source"]
         raw_flow = RawFlow.parse_obj(trace)
         traces.append(raw_flow)
-        traces.append(trace)
 
     return traces
