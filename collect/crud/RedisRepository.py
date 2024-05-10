@@ -17,10 +17,8 @@ def enqueue_data(data: Work, que_name):
 
 def dequeue_data(que_name) -> Work:
     data = redis_client.lpop(que_name)
-    logging.info(f'[RedisRepository] dequeue_data -> START: polled data {data}')
     if data:
         logging.info(f'[RedisRepository] dequeue_data -> END: returned data {data}')
         return Work.parse_raw(data)
-    logging.warning(f'[RedisRepository] dequeue_data -> END: data is None')
     return None
 

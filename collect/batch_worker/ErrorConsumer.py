@@ -37,7 +37,7 @@ class ErrorConsumer:
                     # 2. 에러 포함 로그인지 확인
                     if message.value['error']:
                         logging.info('[ErrorConsumer] activate_listener -> START: Error message received')
-                        work = Work(trace_id='dd',
+                        work = Work(trace_id=message.value['traceId'],
                                     project_id=project_id,
                                     service_id=service_id,
                                     count=0,
