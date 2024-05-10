@@ -34,7 +34,7 @@ class RabbitMQFlowSender:
         try:
             body = {
                 "project_id": data.project_id,
-                "service_flow": data
+                "service_flow": data.service_flow_asc
             }
 
             json_body = json.dumps(body)
