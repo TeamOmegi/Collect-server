@@ -46,6 +46,7 @@ class ErrorConsumer:
                         result = ErrorTraceProcessor.process_work(work)
                         if not result:
                             logging.warning('[ErrorConsumer] activate_listener -> START: Error message received')
+                            self.__insert_to_elasticsearch(message.value, project_id, service_id)
                             RedisRepository.enqueue_data(work, os.environ.get("REDIS_FAST_QUE"))
                     else:
                         self.__insert_to_elasticsearch(message.value, project_id, service_id)

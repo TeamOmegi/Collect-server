@@ -98,5 +98,3 @@ def find_parent_span_id(project_id, service_id, span_id):
         return result['hits']['hits'][0]['inner_hits']['spans']['hits']['hits'][0]['_source']
     else:
         return None
-
-print(find_parent_span_id(8, 2, '907762670dd00a63'))
