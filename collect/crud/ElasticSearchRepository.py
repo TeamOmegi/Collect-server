@@ -95,7 +95,7 @@ def find_parent_span_id(project_id, service_id, span_id):
         }
     )
     if result['hits']['total']['value'] > 0:
-        return json.loads(result['hits']['hits'][0]['inner_hits']['spans']['hits']['hits'][0]['_source'])
+        return result['hits']['hits'][0]['inner_hits']['spans']['hits']['hits'][0]['_source']
     else:
         return None
 
