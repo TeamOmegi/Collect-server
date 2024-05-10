@@ -1,9 +1,8 @@
 import logging
 
-from batch_worker.FlowConsumer import FlowConsumer
-
 logging.basicConfig(level=logging.INFO)
 
+from batch_worker.FlowConsumer import FlowConsumer
 import threading
 from batch_worker.ErrorConsumer import ErrorConsumer
 from batch_worker.RedisWorker import RedisWorker
