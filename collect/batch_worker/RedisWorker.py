@@ -9,8 +9,8 @@ from service import ErrorTraceProcessor
 
 class RedisWorker:
     def __init__(self,
-                 fast_interval=os.getenv('REDIS_FAST_INTERVAL'),
-                 slow_interval=os.getenv('REDIS_SLOW_INTERVAL'),
+                 fast_interval=int(os.getenv('REDIS_FAST_INTERVAL')),
+                 slow_interval=int(os.getenv('REDIS_SLOW_INTERVAL')),
                  fast_que=os.getenv('REDIS_FAST_QUE'),
                  slow_que=os.getenv('REDIS_SLOW_QUE')
                  ):
