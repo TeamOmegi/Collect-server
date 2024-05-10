@@ -45,7 +45,6 @@ class FlowConsumer:
                 if service_id is not None and project_id is not None:
                     raw_flow = RawFlow(trace_id=message.value['traceId'],
                                        project_id=project_id,
-                                       service_id=service_id,
                                        service_name=message.value['serviceName'],
                                        span_id=message.value['spanId'],
                                        parent_span_id=message.value['parentSpanId'],
@@ -57,7 +56,8 @@ class FlowConsumer:
                         # 내보내기
                         FlowTraceProcessor.process_flow(raw_flow)
                     else:
-                        ElasticSearchRepository.insert(raw_flow)
+                        index = os.getenv('ELASTICSEARCH_FLOW_INDEX')
+                        ElasticSearchRepository.insert_with_index(raw_flow, index)
         except KeyboardInterrupt:
             print("Aborted by user...", flush=True)
         finally:

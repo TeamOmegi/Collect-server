@@ -10,10 +10,10 @@ from dto.Flow import Flow
 load_dotenv()
 
 
-class RabbitMQSender:
+class RabbitMQFlowSender:
     def __init__(self, host=os.getenv('RABBITMQ_HOST'), port=os.getenv('RABBITMQ_PORT'),
-                 queue_name=os.getenv('RABBITMQ_QUEUE')):
-        logging.warning(f'RabbitMQSender: {os.getenv("RABBITMQ_HOST")}, {os.getenv("RABBITMQ_QUEUE")}')
+                 queue_name=os.getenv('RABBITMQ_FLOW_QUEUE')):
+        logging.warning(f'RabbitMQSender: {os.getenv("RABBITMQ_HOST")}, {os.getenv("RABBITMQ_FLOW_QUEUE")}')
         self.host = host
         self.port = port
         self.queue_name = queue_name
@@ -29,10 +29,12 @@ class RabbitMQSender:
     def declare_queue(self):
         self.channel.queue_declare(queue=self.queue_name, durable=True)
 
-    def publish_message(self, error_id):
+    def publish_flow_message(self, data: Flow):
+
         try:
             body = {
-                "error_id": error_id,
+                "project_id": data.project_id,
+                "service_flow": data
             }
 
             json_body = json.dumps(body)
