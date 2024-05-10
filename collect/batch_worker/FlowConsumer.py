@@ -1,5 +1,6 @@
 import logging
 import json
+import time
 
 from kafka import KafkaConsumer
 from dotenv import load_dotenv
@@ -53,7 +54,7 @@ class FlowConsumer:
                                        )
 
                     if raw_flow.parent_span_id == '0000000000000000' or raw_flow.parent_span_id is None:
-                        # 내보내기
+                        time.sleep(1)
                         FlowTraceProcessor.process_flow(raw_flow)
                     else:
                         index = os.getenv('ELASTICSEARCH_FLOW_INDEX')
