@@ -50,7 +50,7 @@ def find_by_trace_id_must_error(trace_id, project_id, service_id):
         }
     )
     if result['hits']['total']['value'] > 0:
-        return result['hits']['hits'][0]['_source'][0]
+        return result['hits']['hits'][0]['_source']
     else:
         return None
 
@@ -98,3 +98,4 @@ def find_parent_span_id(project_id, service_id, span_id):
         return result['hits']['hits'][0]['inner_hits']['spans']['hits']['hits'][0]['_source']
     else:
         return None
+
