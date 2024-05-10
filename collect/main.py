@@ -1,10 +1,11 @@
 import logging
+logging.basicConfig(level=logging.INFO)
+
 import threading
 from batch_worker.ErrorConsumer import ErrorConsumer
 from batch_worker.RedisWorker import RedisWorker
 from dotenv import load_dotenv
 
-logging.basicConfig(level=logging.INFO)
 load_dotenv()
 
 
