@@ -21,5 +21,9 @@ def main():
     redis_worker_fast_thread.start()
     redis_worker_slow_thread.start()
 
+    consumer_thread.join()
+    redis_worker_fast_thread.join()
+    redis_worker_slow_thread.join()
+
 
 main()

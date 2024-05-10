@@ -22,6 +22,9 @@ class RedisWorker:
     def run_fast_queue(self):
         while True:
             work = RedisRepository.dequeue_data(self.fast_que)
+            if work is None:
+                time.sleep(self.fast_interval)
+                continue
             logging.info(f'[RedisWorker] run_fast_queue -> START: polled data {work}')
             result = ErrorTraceProcessor.process_work(work)
             if not result:
@@ -34,6 +37,9 @@ class RedisWorker:
     def run_slow_queue(self):
         while True:
             work = RedisRepository.dequeue_data(self.slow_que)
+            if work is None:
+                time.sleep(self.slow_interval)
+                continue
             result = ErrorTraceProcessor.process_work(work)
             if not result and work.count < 10:
                     RedisRepository.enqueue_data(work, self.slow_que)
