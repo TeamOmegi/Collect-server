@@ -1,3 +1,5 @@
+import json
+
 from dto.RawFlow import RawFlow
 from typing import List
 import logging
@@ -34,15 +36,20 @@ def __find_all_trace_from_elasticsearch(data: RawFlow) -> List | None:
 
 def __process_traces_to_flow_data(traces, data: RawFlow) -> Flow | None:
     logging.info(f'[FlowTraceProcessor] __process_traces_to_flow_data -> START')
-    service_names = []
+    services = []
 
     for trace in traces:
-        service_names.append(trace['service_name'])
+        body = {
+            "service_name": trace['service_name'],
+            "span_enter_time": trace['span_enter_time']
+        }
+
+        services.append(body)
 
     return Flow(
         trace_id=data.trace_id,
         project_id=data.project_id,
-        service_flow_asc=service_names
+        service_flow_asc=services
     )
 
 

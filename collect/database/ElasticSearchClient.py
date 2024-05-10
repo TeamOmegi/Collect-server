@@ -25,6 +25,10 @@ def get_database():
                             "type": "keyword"
                         }
                     }
+                },
+                "span_enter_time": {
+                    "type": "date",
+                    "format": "yyyy-MM-dd HH:mm:ss.SSS"
                 }
             }
         }
