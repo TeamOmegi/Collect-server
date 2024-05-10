@@ -52,7 +52,7 @@ class FlowConsumer:
                                        span_exit_time=message.value['spanExitTime']
                                        )
 
-                    if raw_flow.parent_span_id == '0000000000000000' or raw_flow.parent_trace_id is None:
+                    if raw_flow.parent_span_id == '0000000000000000' or raw_flow.parent_span_id is None:
                         # 내보내기
                         FlowTraceProcessor.process_flow(raw_flow)
                     else:
