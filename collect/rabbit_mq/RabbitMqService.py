@@ -26,24 +26,26 @@ class RabbitMQSender:
         self.channel.queue_declare(queue=self.queue_name, durable=True)
 
     def publish_message(self, error_id):
+        try:
+            body = {
+                "error_id": error_id,
+            }
 
-        body = {
-            "error_id": error_id,
-        }
+            json_body = json.dumps(body)
 
-        json_body = json.dumps(body)
-
-        # 메시지 publish 시 delivery_mode를 2로 설정하여 메시지 영속화
-        publish = self.channel.basic_publish(
-            exchange='',
-            routing_key=self.queue_name,
-            body=json_body,
-            properties=pika.BasicProperties(
-                delivery_mode=2,  # 메시지 영속화
+            # 메시지 publish 시 delivery_mode를 2로 설정하여 메시지 영속화
+            publish = self.channel.basic_publish(
+                exchange='',
+                routing_key=self.queue_name,
+                body=json_body,
+                properties=pika.BasicProperties(
+                    delivery_mode=2,  # 메시지 영속화
+                )
             )
-        )
-        logging.info(json_body)
-        logging.warning(publish)
+            logging.info(json_body)
+            logging.warning(publish)
+        except Exception as e:
+            logging.error(f'Failed to publish message: {str(e)}')
 
 
     def close_connection(self):
