@@ -16,6 +16,12 @@ def insert(data):
         body=json.dumps(data)
     )
 
+def insert_with_index(data, index):
+    elastic_client.index(
+        index=index,
+        body=json.dumps(data)
+    )
+
 
 def find_by_trace_id_must_error(trace_id, project_id, service_id):
     result = elastic_client.search(
