@@ -30,7 +30,8 @@ class ErrorConsumer:
     def activate_listener(self):
         try:
             for message in self.consumer:
-                logging.info(f'[ErrorConsumer] activate_listener -> Received message: {message}')
+                logging.info(f'[ErrorConsumer] activate_listener -> Received message')
+                logging.debug(f'[ErrorConsumer] activate_listener -> MESSAGE : {message}')
                 # 1. 로그 토큰 인증 (project, service id 받기)
                 project_id, service_id = JwtService.get_payload_from_token(message.value['token'])
                 if service_id is not None and project_id is not None:
@@ -56,11 +57,13 @@ class ErrorConsumer:
             self.consumer.close()
 
     def __insert_to_elasticsearch(self, data, project_id, service_id):
-        logging.info(f'[ErrorConsumer] __insert_to_elasticsearch -> START: {data}')
+        logging.info(f'[ErrorConsumer] __insert_to_elasticsearch -> START')
+        logging.debug(f'[ErrorConsumer] __insert_to_elasticsearch -> START: {data}')
         data['projectId'] = project_id
         data['serviceId'] = service_id
         ElasticSearchRepository.insert(data)
-        logging.info(f'[ErrorConsumer] __insert_to_elasticsearch -> END: {data}')
+        logging.info(f'[ErrorConsumer] __insert_to_elasticsearch -> END:')
+        logging.debug(f'[ErrorConsumer] __insert_to_elasticsearch -> END: {data}')
 
     def __set_kafka__(self):
         self.consumer = KafkaConsumer(

@@ -45,17 +45,20 @@ def process_work(work: Work) -> bool:
 
 
 def __get_error_trace(data: Work):
-    logging.info(f'[ErrorTraceProcessor] __get_error_trace -> START: {data}')
+    logging.info(f'[ErrorTraceProcessor] __get_error_trace -> START')
+    logging.debug(f'[ErrorTraceProcessor] __get_error_trace -> DATA: {data}')
     trace = ElasticSearchRepository.find_by_trace_id_must_error(data.trace_id, data.project_id, data.service_id)
     if trace is None:
         logging.warning(f'[ErrorTraceProcessor] __get_error_trace -> PROBLEM error trace not found: {data}')
         return None
-    logging.info(f'[ErrorTraceProcessor] __get_error_trace -> END: {data}')
+    logging.info(f'[ErrorTraceProcessor] __get_error_trace -> END')
+    logging.debug(f'[ErrorTraceProcessor] __get_error_trace -> DATA: {data}')
     return trace
 
 
 def __find_all_trace_from_elasticsearch(data: Work) -> List | None:
-    logging.info(f'[ErrorTraceProcessor] __find_all_trace_from_elasticsearch -> START: {data}')
+    logging.info(f'[ErrorTraceProcessor] __find_all_trace_from_elasticsearch -> START')
+    logging.debug(f'[ErrorTraceProcessor] __find_all_trace_from_elasticsearch -> DATA: {data}')
     traces = []
     current_trace = data.error_trace
     while True:
@@ -68,12 +71,14 @@ def __find_all_trace_from_elasticsearch(data: Work) -> List | None:
             logging.warning(f'[ErrorTraceProcessor] __find_all_trace_from_elasticsearch -> PROBLEM trace not found: {data}')
             return None
         current_trace = found_trace
-    logging.info(f'[ErrorTraceProcessor] __find_all_trace_from_elasticsearch__ -> END: {traces}')
+    logging.info(f'[ErrorTraceProcessor] __find_all_trace_from_elasticsearch__ -> END')
+    logging.debug(f'[ErrorTraceProcessor] __find_all_trace_from_elasticsearch__ -> DATA: {traces}')
     return traces
 
 
 def __process_traces_to_error_log(traces, data: Work) -> ErrorLog | None:
-    logging.info(f'[ErrorTraceProcessor] __process_traces_to_error_log -> START: {data}')
+    logging.info(f'[ErrorTraceProcessor] __process_traces_to_error_log -> START')
+    logging.debug(f'[ErrorTraceProcessor] __process_traces_to_error_log -> DATA: {data}')
     error_type, summary, log = __get_error_metadata__(traces)
     if error_type is None or summary is None or log is None:
         logging.warning(f'[ErrorTraceProcessor] __process_traces_to_error_log -> PROBLEM occurred while processing '
@@ -84,7 +89,8 @@ def __process_traces_to_error_log(traces, data: Work) -> ErrorLog | None:
         logging.warning(f'[ErrorTraceProcessor] __process_traces_to_error_log -> PROBLEM occurred while processing '
                         f'trace spans: {data}')
         return None
-    logging.info(f'[ErrorTraceProcessor] __process_traces_to_error_log -> END: {data}')
+    logging.info(f'[ErrorTraceProcessor] __process_traces_to_error_log -> END')
+    logging.debug(f'[ErrorTraceProcessor] __process_traces_to_error_log -> DATA: {data}')
     return ErrorLog(
         project_id=data.project_id,
         service_id=data.service_id,
@@ -97,12 +103,14 @@ def __process_traces_to_error_log(traces, data: Work) -> ErrorLog | None:
 
 
 def __insert_to_mongodb(data: ErrorLog) -> str:
-    logging.info(f'[ErrorTraceProcessor] __insert_to_mongodb -> START: {data}')
+    logging.info(f'[ErrorTraceProcessor] __insert_to_mongodb -> START')
+    logging.debug(f'[ErrorTraceProcessor] __insert_to_mongodb -> DATA: {data}')
     return MongoRepository.insert(data)
 
 
 def __insert_to_mysql(data: ErrorLog, mongo_id: str) -> object:
-    logging.info(f'[ErrorTraceProcessor] __insert_to_mysql -> START: {data}')
+    logging.info(f'[ErrorTraceProcessor] __insert_to_mysql -> START')
+    logging.debug(f'[ErrorTraceProcessor] __insert_to_mysql -> DATA: {data}')
     error = Error(
         service_id=data.service_id,
         mongo_id=mongo_id,
