@@ -31,4 +31,7 @@ def get_database():
     }
     if not client.indices.exists(index=os.getenv('ELASTICSEARCH_INDEX')):
         client.indices.create(index=os.getenv('ELASTICSEARCH_INDEX'), body=mapping)
+
+    if not client.indices.exists(index=os.getenv('ELASTICSEARCH_FLOW_INDEX')):
+        client.indices.create(index=os.getenv('ELASTICSEARCH_FLOW_INDEX'), body=mapping)
     return client
