@@ -95,8 +95,7 @@ def find_parent_span_id(project_id, service_id, span_id):
         }
     )
     if result['hits']['total']['value'] > 0:
-        return result['hits']['hits'][0]['inner_hits']['spans']['hits']['hits'][0]['_source']
+        return result['hits']['hits'][0]['_source']
     else:
         return None
 
-# print(find_by_trace_id_must_error(project_id=8, service_id=2, trace_id='48e46b7c5e9b74e5657db623ead9bcdf')['spans'][-1]['parentSpanId'])
