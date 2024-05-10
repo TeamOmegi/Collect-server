@@ -32,7 +32,7 @@ class RabbitMQSender:
     def publish_message(self, error_id):
         try:
             body = {
-                "error_id": error_id,
+                "errorId": error_id,
             }
 
             json_body = json.dumps(body)

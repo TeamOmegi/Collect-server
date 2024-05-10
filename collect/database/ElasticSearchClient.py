@@ -25,17 +25,12 @@ def get_database():
                             "type": "keyword"
                         }
                     }
-                },
-                "span_enter_time": {
-                    "type": "date",
-                    "format": "yyyy-MM-dd HH:mm:ss.SSS"
                 }
             }
         }
     }
     if not client.indices.exists(index=os.getenv('ELASTICSEARCH_INDEX')):
         client.indices.create(index=os.getenv('ELASTICSEARCH_INDEX'), body=mapping)
-
     if not client.indices.exists(index=os.getenv('ELASTICSEARCH_FLOW_INDEX')):
         client.indices.create(index=os.getenv('ELASTICSEARCH_FLOW_INDEX'), body=mapping)
     return client

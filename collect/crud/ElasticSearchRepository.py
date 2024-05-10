@@ -1,8 +1,11 @@
 import json
+from pydantic import parse_obj_as
 
 from database.ElasticSearchClient import get_database
 from dotenv import load_dotenv
 import os
+
+from dto.RawFlow import RawFlow
 
 load_dotenv()
 
@@ -114,13 +117,7 @@ def find_all_by_trace_id(trace_id):
             "match": {
                 "trace_id": trace_id
             }
-        },
-        "sort": [
-            {
-                "span_enter_time": {
-                    "order": "asc"}
-            }
-        ]
+        }
     }
 
     result = elastic_client.search(index=index, body=query)
@@ -129,6 +126,8 @@ def find_all_by_trace_id(trace_id):
     traces = []
     for hit in result["hits"]["hits"]:
         trace = hit["_source"]
+        raw_flow = RawFlow.parse_obj(trace)
+        traces.append(raw_flow)
         traces.append(trace)
 
     return traces

@@ -25,10 +25,11 @@ def __find_all_trace_from_elasticsearch(data: RawFlow) -> List | None:
     trace_id = data.trace_id
 
     found_trace = ElasticSearchRepository.find_all_by_trace_id(trace_id)
-    services.insert(0, data)
+    services.append(data)
 
     if found_trace is not None:
-        services.append(found_trace)
+        sorted_found_trace = sorted(found_trace, key=lambda x: x.span_enter_time)
+        services.extend(sorted_found_trace)
 
     logging.info(f'[FlowTraceProcessor] __find_all_trace_from_elasticsearch -> END: {services}')
     return services
@@ -40,8 +41,8 @@ def __process_traces_to_flow_data(traces, data: RawFlow) -> Flow | None:
 
     for trace in traces:
         body = {
-            "service_name": trace['service_name'],
-            "span_enter_time": trace['span_enter_time']
+            "serviceName": trace['service_name'],
+            "spanEnterTime": trace['span_enter_time']
         }
 
         services.append(body)
