@@ -41,8 +41,8 @@ def __process_traces_to_flow_data(traces, data: RawFlow) -> Flow | None:
 
     for trace in traces:
         body = {
-            "serviceName": trace['service_name'],
-            "spanEnterTime": trace['span_enter_time']
+            "serviceName": trace.service_name,
+            "spanEnterTime": trace.span_enter_time
         }
 
         services.append(body)
