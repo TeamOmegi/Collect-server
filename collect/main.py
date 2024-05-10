@@ -1,26 +1,28 @@
 import logging
-logging.basicConfig(level=logging.INFO)
-
+import threading
 from batch_worker.ErrorConsumer import ErrorConsumer
 from batch_worker.RedisWorker import RedisWorker
 from dotenv import load_dotenv
 
+logging.basicConfig(level=logging.INFO)
 load_dotenv()
-print("Starting Collect-server", flush=True)
 
 
-def run_kafka_consumer():
-    print("Starting Kafka Consumer", flush=True)
+def main():
+    print("Starting Collect-server", flush=True)
     consumer = ErrorConsumer()
-    consumer.activate_listener()
-
-
-def run_redis_consumer():
-    print("Starting Redis Consumer", flush=True)
     redis_worker = RedisWorker()
-    redis_worker.run_fast_queue()
-    redis_worker.run_slow_queue()
 
+    consumer_thread = threading.Thread(target=consumer.activate_listener)
+    redis_worker_fast_thread = threading.Thread(target=redis_worker.run_fast_queue)
+    redis_worker_slow_thread = threading.Thread(target=redis_worker.run_slow_queue)
 
-run_kafka_consumer()
-run_redis_consumer()
+    consumer_thread.start()
+    redis_worker_fast_thread.start()
+    redis_worker_slow_thread.start()
+
+    consumer_thread.join()
+    redis_worker_fast_thread.join()
+    redis_worker_slow_thread.join()
+
+main()

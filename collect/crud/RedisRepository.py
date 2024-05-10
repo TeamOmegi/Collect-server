@@ -17,3 +17,8 @@ def dequeue_data(que_name) -> Work:
     if data:
         return Work.parse_raw(data)
     return None
+
+
+work = Work(trace_id='dd', project_id=1, service_id=1, count = 0, error_trace=None)
+
+enqueue_data(work, "fast_queue")

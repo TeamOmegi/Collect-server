@@ -23,3 +23,5 @@ def __get_database__(client: pymongo.MongoClient, database_name: str) -> pymongo
 
 def __get_collection__(database: pymongo.database.Database, collection_name: str) -> pymongo.collection.Collection:
    return database[collection_name]
+
+
