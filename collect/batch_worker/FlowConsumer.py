@@ -70,7 +70,7 @@ class FlowConsumer:
 
                     elif raw_flow.parent_span_id.startswith('00000') or raw_flow.parent_span_id is None:
                         message.value['secondSend'] = True
-                        time.sleep(1)
+                        time.sleep(3)
                         self.producer.send(os.getenv('KAFKA_LINK_TOPIC'), value=message.value)
 
                     else:
