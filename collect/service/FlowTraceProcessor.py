@@ -62,6 +62,10 @@ def __insert_to_mysql_if_not_exist(data: Flow):
     database = MySqlClient.get_database()
 
     for service in services:
+        if pre_service is None:
+            pre_service = service['serviceId']
+            continue
+
         service_link = ServiceLink(
             service_id=pre_service,
             linked_service_id=service['serviceId'],

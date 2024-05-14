@@ -24,12 +24,9 @@ def insert_service_link(service_link: ServiceLink, session: Session) -> int:
 
 
 def check_service_link_exists(service_id, linked_service_id, session: Session) -> bool:
-    query = session.query(ServiceLink).filter(ServiceLink.linked_service_id == linked_service_id)
-    if service_id is not None:
-        query = query.filter(ServiceLink.service_id == service_id)
-    else:
-        query = query.filter(ServiceLink.service_id == None)
-    return query.first() is not None
+    return session.query(ServiceLink).filter(ServiceLink.linked_service_id == linked_service_id). \
+        filter(ServiceLink.service_id == service_id). \
+        first() is not None
 
 
 def find_all(session: Session) -> List[Error]:
