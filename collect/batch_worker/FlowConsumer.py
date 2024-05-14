@@ -45,7 +45,7 @@ class FlowConsumer:
         self.consumer.subscribe(self.topic)
 
     def schedule_process_flow(self, trace_id, project_id):
-        run_time = datetime.now() + timedelta(minutes=1)
+        run_time = datetime.now() + timedelta(seconds=10)
         self.scheduler.add_job(FlowTraceProcessor.process_flow, 'date', run_date=run_time, args=[trace_id, project_id])
 
     def activate_listener(self):
