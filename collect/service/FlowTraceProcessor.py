@@ -1,25 +1,20 @@
 import json
 
+from crud.MySqlRespository import check_service_link_exists
 from database import MySqlClient
 from dto.RawFlow import RawFlow
 from typing import List
 import logging
 
 from entity.ServiceLink import ServiceLink
-from rabbit_mq.RabbitMqFlowService import RabbitMQFlowSender
 from crud import ElasticSearchRepository, MySqlRespository
 from dto.Flow import Flow
-
-rabbitmq = RabbitMQFlowSender()
-rabbitmq.connect()
-rabbitmq.declare_queue()
 
 
 def process_flow(raw_flow: RawFlow) -> bool:
     services = __find_all_trace_from_elasticsearch(raw_flow)
     processed_flow = __process_traces_to_flow_data(services, raw_flow)
-    __insert_to_mysql(processed_flow)
-    __send_to_rabbitmq(processed_flow.project_id)
+    __insert_to_mysql_if_not_exist(processed_flow)
     return True
 
 
@@ -58,7 +53,7 @@ def __process_traces_to_flow_data(traces, data: RawFlow) -> Flow | None:
     )
 
 
-def __insert_to_mysql(data: Flow):
+def __insert_to_mysql_if_not_exist(data: Flow):
     logging.info(f'[FlowTraceProcessor] __insert_to_mysql -> START')
     logging.debug(f'[FlowTraceProcessor] __insert_to_mysql -> DATA: {data}')
 
@@ -76,13 +71,11 @@ def __insert_to_mysql(data: Flow):
             enabled=True
         )
 
-        pre_service=service.service_id
+        pre_service = service.service_id
 
-        insert = MySqlRespository.insertServiceLink(service_link, MySqlClient.get_database())
-        logging.info(f'[FlowTraceProcessor] __insert_to_mysql -> INSERT_ID: {insert}')
-
-
-def __send_to_rabbitmq(project_id):
-    logging.info(f'[FlowTraceProcessor] __send_to_rabbitmq -> START: {project_id}')
-    result = rabbitmq.publish_flow_message(project_id)
-    logging.info(f'[FlowTraceProcessor] __send_to_rabbitmq -> END: {result}')
+        if check_service_link_exists(service_link.service_link_id, service_link.linked_service_id,
+                                     MySqlClient.get_database()):
+            continue
+        else:
+            insert = MySqlRespository.insert_service_link(service_link, MySqlClient.get_database())
+            logging.info(f'[FlowTraceProcessor] __insert_to_mysql -> INSERT_ID: {insert}')
