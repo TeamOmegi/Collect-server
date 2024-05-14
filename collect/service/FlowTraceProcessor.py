@@ -60,14 +60,19 @@ def __insert_to_mysql_if_not_exist(data: Flow):
     services = data.service_flow_asc
     pre_service = -1
 
+    # 토큰 없어서 임시로 넣어줬는데 나중에 바꿔야함~!~!~!~!~!~!
+    count = 0
     for service in services:
+        count += 1
         if pre_service == -1:
-            pre_service = service['serviceId']
+            # pre_service = service['serviceId']
+            pre_service = count
             continue
 
         service_link = ServiceLink(
             service_id=pre_service,
-            linked_service_id=service['serviceId'],
+            # linked_service_id=service['serviceId'],
+            linked_service_id=count,
             enabled=True
         )
 
