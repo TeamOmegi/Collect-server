@@ -30,6 +30,8 @@ class RabbitMQSender:
         self.channel.queue_declare(queue=self.queue_name, durable=True)
 
     def publish_message(self, error_id):
+        self.connect()
+
         try:
             body = {
                 "errorId": error_id,
