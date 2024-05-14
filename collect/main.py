@@ -1,6 +1,6 @@
 import logging
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 from batch_worker.FlowConsumer import FlowConsumer
 import threading
