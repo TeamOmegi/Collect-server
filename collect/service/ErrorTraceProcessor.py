@@ -68,7 +68,8 @@ def __find_all_trace_from_elasticsearch(data: Work) -> List | None:
             break
         found_trace = ElasticSearchRepository.find_parent_span_id(data.project_id, data.service_id, parent_trace_id)
         if found_trace is None:
-            logging.warning(f'[ErrorTraceProcessor] __find_all_trace_from_elasticsearch -> PROBLEM trace not found: {data}')
+            logging.warning(
+                f'[ErrorTraceProcessor] __find_all_trace_from_elasticsearch -> PROBLEM trace not found: {data}')
             return None
         current_trace = found_trace
     logging.info(f'[ErrorTraceProcessor] __find_all_trace_from_elasticsearch__ -> END')
@@ -143,6 +144,12 @@ def __get_trace_to_span_metadata__(traces) -> List | None:
     for trace in traces:
         service_name = trace['serviceName']
         for span in trace['spans']:
+            enter_time = span['spanEnterTime']
+            exit_time = span['spanExitTime']
+
+            enter_time_iso = datetime.fromisoformat(enter_time).isoformat()
+            exit_time_iso = datetime.fromisoformat(exit_time).isoformat()
+
             spans.append(
                 TraceSpan(
                     span_id=span['spanId'],
@@ -151,8 +158,7 @@ def __get_trace_to_span_metadata__(traces) -> List | None:
                     parent_span_id=span['parentSpanId'],
                     kind=span['kind'],
                     attributes=span['attributes'],
-                    enter_time=span['spanEnterTime'],
-                    exit_time=span['spanExitTime']
+                    enter_time=enter_time_iso,
+                    exit_time=exit_time_iso
                 ))
     return spans if spans else None
-

@@ -9,7 +9,7 @@ import os
 from auth import JwtService
 from dto.RawFlow import RawFlow
 from service import FlowTraceProcessor
-from crud import ElasticSearchRepository, RedisRepository
+from crud import ElasticSearchRepository
 
 load_dotenv()
 
@@ -42,7 +42,10 @@ class FlowConsumer:
         try:
             for message in self.consumer:
                 logging.info(f'[FlowConsumer] activate_listener -> Received message: {message}')
-                project_id, service_id = JwtService.get_payload_from_token(message.value['token'])
+                # 나중에 원래 로직으로 바꿔야 함~~~!
+                # project_id, service_id = JwtService.decode_token(message.value['token'])
+
+                project_id, service_id = JwtService.get_payload_from_token('토큰줘')
                 if service_id is not None and project_id is not None:
                     raw_flow = RawFlow(trace_id=message.value['traceId'],
                                        project_id=project_id,

@@ -65,14 +65,12 @@ def __insert_to_mysql_if_not_exist(data: Flow):
     for service in services:
         count += 1
         if pre_service == -1:
-            # pre_service = service['serviceId']
-            pre_service = count
+            pre_service = service['serviceId']
             continue
 
         service_link = ServiceLink(
             service_id=pre_service,
-            # linked_service_id=service['serviceId'],
-            linked_service_id=count,
+            linked_service_id=service['serviceId'],
             enabled=True
         )
 
