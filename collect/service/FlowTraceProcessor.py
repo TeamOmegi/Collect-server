@@ -11,23 +11,20 @@ from crud import ElasticSearchRepository, MySqlRespository
 from dto.Flow import Flow
 
 
-def process_flow(raw_flow: RawFlow) -> bool:
-    services = __find_all_trace_from_elasticsearch(raw_flow)
+def process_flow(trace_id, project_id) -> bool:
+    services = __find_all_trace_from_elasticsearch(trace_id)
     logging.info(f'[FlowTraceProcessor] __find_all_trace_from_elasticsearch -> services: {services}')
-    processed_flow = __process_traces_to_flow_data(services, raw_flow)
+    processed_flow = __process_traces_to_flow_data(services, trace_id, project_id)
     __insert_to_mysql_if_not_exist(processed_flow)
     return True
 
 
-def __find_all_trace_from_elasticsearch(data: RawFlow) -> List | None:
-    logging.info(f'[FlowTraceProcessor] __find_all_trace_from_elasticsearch -> START: {data}')
+def __find_all_trace_from_elasticsearch(trace_id) -> List | None:
+    logging.info(f'[FlowTraceProcessor] __find_all_trace_from_elasticsearch -> START: {trace_id}')
     services = []
-    trace_id = data.trace_id
 
     found_trace = ElasticSearchRepository.find_all_by_trace_id(trace_id)
     logging.info(f'[FlowTraceProcessor] __find_all_trace_from_elasticsearch -> found_trace: {found_trace}')
-
-    services.append(data)
 
     if found_trace is not None:
         sorted_found_trace = sorted(found_trace, key=lambda x: x.span_enter_time)
@@ -37,7 +34,7 @@ def __find_all_trace_from_elasticsearch(data: RawFlow) -> List | None:
     return services
 
 
-def __process_traces_to_flow_data(traces, data: RawFlow) -> Flow | None:
+def __process_traces_to_flow_data(traces, trace_id, project_id) -> Flow | None:
     logging.info(f'[FlowTraceProcessor] __process_traces_to_flow_data -> START')
     services = []
 
@@ -50,8 +47,8 @@ def __process_traces_to_flow_data(traces, data: RawFlow) -> Flow | None:
         services.append(body)
 
     return Flow(
-        trace_id=data.trace_id,
-        project_id=data.project_id,
+        trace_id=trace_id,
+        project_id=project_id,
         service_flow_asc=services
     )
 

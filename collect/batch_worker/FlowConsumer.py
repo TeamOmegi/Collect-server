@@ -1,6 +1,7 @@
 import logging
 import json
 import time
+from datetime import datetime, timedelta
 
 from kafka import KafkaConsumer, KafkaProducer
 from dotenv import load_dotenv
@@ -11,6 +12,8 @@ from dto.RawFlow import RawFlow
 from service import FlowTraceProcessor
 from crud import ElasticSearchRepository
 
+from apscheduler.schedulers.background import BackgroundScheduler
+
 load_dotenv()
 
 
@@ -20,7 +23,7 @@ class FlowConsumer:
     group_id = ''
     rabbitmq = None
     consumer = None
-    producer = None
+    scheduler = None
 
     def __init__(self):
         self.bootstrap_servers = [f'{os.getenv("KAFKA_HOST_1")}:{os.getenv("KAFKA_PORT")}',
@@ -28,6 +31,8 @@ class FlowConsumer:
         self.topic = [os.getenv("KAFKA_LINK_TOPIC")]
         self.group_id = os.getenv("KAFKA_GROUP_ID")
         self.__set_kafka__()
+        self.scheduler = BackgroundScheduler()
+        self.scheduler.start()
 
     def __set_kafka__(self):
         self.consumer = KafkaConsumer(
@@ -39,16 +44,13 @@ class FlowConsumer:
         )
         self.consumer.subscribe(self.topic)
 
-        self.producer = KafkaProducer(
-            bootstrap_servers=self.bootstrap_servers,
-            value_serializer=lambda v: json.dumps(v).encode('utf-8')
-        )
+    def schedule_process_flow(self, trace_id, project_id):
+        run_time = datetime.now() + timedelta(minutes=1)
+        self.scheduler.add_job(FlowTraceProcessor.process_flow, 'date', run_date=run_time, args=[trace_id, project_id])
 
     def activate_listener(self):
         try:
             for message in self.consumer:
-                second_send = message.value.get('secondSend', 0)
-                logging.info(f'[FlowConsumer] activate_listener -> Second send: {second_send}')
                 logging.info(f'[FlowConsumer] activate_listener -> Received message: {message}')
 
                 project_id, service_id = JwtService.decode_token(message.value['token'])
@@ -65,20 +67,9 @@ class FlowConsumer:
                                        span_exit_time=message.value['spanExitTime']
                                        )
 
-                    if 0 < second_send < 10:
-                        logging.info(f'Second send : {second_send}')
-                        traces = ElasticSearchRepository.find_all_by_trace_id(raw_flow.trace_id)
-
-                        if not traces:
-                            message.value['secondSend'] = second_send + 1
-                            self.producer.send(os.getenv('KAFKA_LINK_TOPIC'), value=message.value)
-                        else:
-                            FlowTraceProcessor.process_flow(raw_flow)
-
-                    elif raw_flow.parent_span_id.startswith('00000') or raw_flow.parent_span_id is None:
+                    if raw_flow.parent_span_id.startswith('00000') or raw_flow.parent_span_id is None:
                         logging.info("Parent span ID starts with '00000'")
-                        message.value['secondSend'] = 1
-                        self.producer.send(os.getenv('KAFKA_LINK_TOPIC'), value=message.value)
+                        self.schedule_process_flow(raw_flow.trace_id, raw_flow.project_id)
 
                     else:
                         logging.info("Normal span")
@@ -88,8 +79,9 @@ class FlowConsumer:
 
         except KeyboardInterrupt:
             logging.info("Aborted by user...")
+
         except Exception as e:
             logging.error(f"An error occurred: {str(e)}")
         finally:
             self.consumer.close()
-            self.producer.close()
+            self.scheduler.shutdown()
