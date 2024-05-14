@@ -47,10 +47,10 @@ class FlowConsumer:
     def activate_listener(self):
         try:
             for message in self.consumer:
-                second_send = message.value.get('secondSend')
-                logging.info(message.value.get('secondSend'))
-
+                second_send = message.value.get('secondSend', 0)
+                logging.info(f'[FlowConsumer] activate_listener -> Second send: {second_send}')
                 logging.info(f'[FlowConsumer] activate_listener -> Received message: {message}')
+
                 project_id, service_id = JwtService.decode_token(message.value['token'])
                 logging.info(f'Project ID: {project_id}')
                 logging.info(f'Service ID: {service_id}')
@@ -65,24 +65,31 @@ class FlowConsumer:
                                        span_exit_time=message.value['spanExitTime']
                                        )
 
-                    if second_send:
-                        logging.info("second span")
-                        FlowTraceProcessor.process_flow(raw_flow)
+                    if 0 < second_send < 10:
+                        logging.info("Second span " + second_send)
+                        traces = ElasticSearchRepository.find_all_by_trace_id(raw_flow.trace_id)
+
+                        if not traces:
+                            message.value['secondSend'] = second_send + 1
+                            self.producer.send(os.getenv('KAFKA_LINK_TOPIC'), value=message.value)
+                        else:
+                            FlowTraceProcessor.process_flow(raw_flow)
 
                     elif raw_flow.parent_span_id.startswith('00000') or raw_flow.parent_span_id is None:
-                        logging.info("parent_span_id.startswith('00000')")
-                        message.value['secondSend'] = True
-                        time.sleep(3)
+                        logging.info("Parent span ID starts with '00000'")
+                        message.value['secondSend'] = 1
                         self.producer.send(os.getenv('KAFKA_LINK_TOPIC'), value=message.value)
 
                     else:
-                        logging.info("normal span")
+                        logging.info("Normal span")
                         index = os.getenv('ELASTICSEARCH_FLOW_INDEX')
                         raw_flow_dict = raw_flow.dict()
                         ElasticSearchRepository.insert_with_index(raw_flow_dict, index)
 
         except KeyboardInterrupt:
-            print("Aborted by user...", flush=True)
+            logging.info("Aborted by user...")
+        except Exception as e:
+            logging.error(f"An error occurred: {str(e)}")
         finally:
             self.consumer.close()
             self.producer.close()
