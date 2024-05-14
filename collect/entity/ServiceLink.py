@@ -10,4 +10,4 @@ class ServiceLink(Base):
     linked_service_id = Column(Integer, nullable=False)
     enabled = Column(Boolean, nullable=False)
     created_at = Column(TIMESTAMP, nullable=False, default=func.now())
-    updated_at = Column(TIMESTAMP, onupdate=func.now())
+    updated_at = Column(TIMESTAMP, default=func.now(), onupdate=func.now())
