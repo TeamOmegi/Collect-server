@@ -54,34 +54,24 @@ def __process_traces_to_flow_data(traces, data: RawFlow) -> Flow | None:
 
 
 def __insert_to_mysql_if_not_exist(data: Flow):
-    logging.info(f'[FlowTraceProcessor] __insert_to_mysql -> START')
+    logging.info('[FlowTraceProcessor] __insert_to_mysql -> START')
     logging.debug(f'[FlowTraceProcessor] __insert_to_mysql -> DATA: {data}')
 
     services = data.service_flow_asc
-    pre_service = -1
+    pre_service = None
+    database = MySqlClient.get_database()
 
-    # 토큰 없어서 임시로 넣어줬는데 나중에 바꿔야함~!~!~!~!~!~!
-    count = 10
     for service in services:
-        count += 1
-        if pre_service == -1:
-            pre_service = count
-            # pre_service = service['serviceId']
-            continue
-
         service_link = ServiceLink(
             service_id=pre_service,
-            # linked_service_id=service['serviceId'],
-            linked_service_id=count,
+            linked_service_id=service['serviceId'],
             enabled=True
         )
 
-        # pre_service = service['serviceId']
-        pre_service = count
+        exists = check_service_link_exists(pre_service, service_link.linked_service_id, database)
 
-        if check_service_link_exists(service_link.service_link_id, service_link.linked_service_id,
-                                     MySqlClient.get_database()):
-            continue
-        else:
-            insert = MySqlRespository.insert_service_link(service_link, MySqlClient.get_database())
+        if not exists:
+            insert = MySqlRespository.insert_service_link(service_link, database)
             logging.info(f'[FlowTraceProcessor] __insert_to_mysql -> INSERT_ID: {insert}')
+
+        pre_service = service['serviceId']

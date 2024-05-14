@@ -33,7 +33,11 @@ class ErrorConsumer:
                 logging.info(f'[ErrorConsumer] activate_listener -> Received message')
                 logging.debug(f'[ErrorConsumer] activate_listener -> MESSAGE : {message}')
                 # 1. 로그 토큰 인증 (project, service id 받기)
-                project_id, service_id = JwtService.get_payload_from_token(message.value['token'])
+                project_id, service_id = JwtService.decode_token(message.value['token'])
+
+                logging.info(f'Project ID: {project_id}')
+                logging.info(f'Service ID: {service_id}')
+
                 if service_id is not None and project_id is not None:
                     # 2. 에러 포함 로그인지 확인
                     if message.value['error']:

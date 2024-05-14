@@ -1,4 +1,5 @@
 from typing import List
+
 from sqlmodel import Session
 from entity.Error import Error
 from entity.ServiceLink import ServiceLink
@@ -23,15 +24,12 @@ def insert_service_link(service_link: ServiceLink, session: Session) -> int:
 
 
 def check_service_link_exists(service_id, linked_service_id, session: Session) -> bool:
-    service_link = session.query(ServiceLink).\
-        filter(ServiceLink.service_id == service_id).\
-        filter(ServiceLink.linked_service_id == linked_service_id).\
-        first()
-
-    if service_link:
-        return True
+    query = session.query(ServiceLink).filter(ServiceLink.linked_service_id == linked_service_id)
+    if service_id is not None:
+        query = query.filter(ServiceLink.service_id == service_id)
     else:
-        return False
+        query = query.filter(ServiceLink.service_id == None)
+    return query.first() is not None
 
 
 def find_all(session: Session) -> List[Error]:

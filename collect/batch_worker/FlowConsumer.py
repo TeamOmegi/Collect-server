@@ -42,10 +42,10 @@ class FlowConsumer:
         try:
             for message in self.consumer:
                 logging.info(f'[FlowConsumer] activate_listener -> Received message: {message}')
-                # 나중에 원래 로직으로 바꿔야 함~~~!
-                # project_id, service_id = JwtService.decode_token(message.value['token'])
+                project_id, service_id = JwtService.decode_token(message.value['token'])
+                logging.info(f'Project ID: {project_id}')
+                logging.info(f'Service ID: {service_id}')
 
-                project_id, service_id = JwtService.get_payload_from_token('토큰줘')
                 if service_id is not None and project_id is not None:
                     raw_flow = RawFlow(trace_id=message.value['traceId'],
                                        project_id=project_id,
