@@ -46,7 +46,7 @@ class FlowConsumer:
                 if service_id is not None and project_id is not None:
                     raw_flow = RawFlow(trace_id=message.value['traceId'],
                                        project_id=project_id,
-                                       service_name=message.value['serviceName'],
+                                       service_id=message.value['serviceId'],
                                        span_id=message.value['spanId'],
                                        parent_span_id=message.value['parentSpanId'],
                                        span_enter_time=message.value['spanEnterTime'],

@@ -5,7 +5,7 @@ from datetime import datetime
 class RawFlow(BaseModel):
     trace_id: str
     project_id: int
-    service_name: str
+    service_id: int
     span_id: str
     parent_span_id: str
     span_enter_time: datetime

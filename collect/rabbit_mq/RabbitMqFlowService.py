@@ -29,13 +29,12 @@ class RabbitMQFlowSender:
     def declare_queue(self):
         self.channel.queue_declare(queue=self.queue_name, durable=True)
 
-    def publish_flow_message(self, data: Flow):
+    def publish_flow_message(self, project_id):
         self.connect()
 
         try:
             body = {
-                "project_id": data.project_id,
-                "service_flow": data.service_flow_asc
+                "project_id": project_id,
             }
 
             json_body = json.dumps(body)

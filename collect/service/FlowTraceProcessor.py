@@ -1,10 +1,13 @@
 import json
 
+from database import MySqlClient
 from dto.RawFlow import RawFlow
 from typing import List
 import logging
+
+from entity.ServiceLink import ServiceLink
 from rabbit_mq.RabbitMqFlowService import RabbitMQFlowSender
-from crud import ElasticSearchRepository
+from crud import ElasticSearchRepository, MySqlRespository
 from dto.Flow import Flow
 
 rabbitmq = RabbitMQFlowSender()
@@ -15,7 +18,8 @@ rabbitmq.declare_queue()
 def process_flow(raw_flow: RawFlow) -> bool:
     services = __find_all_trace_from_elasticsearch(raw_flow)
     processed_flow = __process_traces_to_flow_data(services, raw_flow)
-    __send_to_rabbitmq(processed_flow)
+    __insert_to_mysql(processed_flow)
+    __send_to_rabbitmq(processed_flow.project_id)
     return True
 
 
@@ -41,7 +45,7 @@ def __process_traces_to_flow_data(traces, data: RawFlow) -> Flow | None:
 
     for trace in traces:
         body = {
-            "serviceName": trace.service_name,
+            "serviceId": trace.service_id,
             "spanEnterTime": str(trace.span_enter_time)
         }
 
@@ -54,7 +58,31 @@ def __process_traces_to_flow_data(traces, data: RawFlow) -> Flow | None:
     )
 
 
-def __send_to_rabbitmq(data: Flow):
-    logging.info(f'[FlowTraceProcessor] __send_to_rabbitmq -> START: {data}')
-    result = rabbitmq.publish_flow_message(data)
+def __insert_to_mysql(data: Flow):
+    logging.info(f'[FlowTraceProcessor] __insert_to_mysql -> START')
+    logging.debug(f'[FlowTraceProcessor] __insert_to_mysql -> DATA: {data}')
+
+    services = data.service_flow_asc
+    pre_service = -1
+
+    for service in services:
+        if pre_service == -1:
+            pre_service = service.service_id
+            continue
+
+        service_link = ServiceLink(
+            service_id=pre_service,
+            linked_service_id=service.service_id,
+            enabled=True
+        )
+
+        pre_service=service.service_id
+
+        insert = MySqlRespository.insertServiceLink(service_link, MySqlClient.get_database())
+        logging.info(f'[FlowTraceProcessor] __insert_to_mysql -> INSERT_ID: {insert}')
+
+
+def __send_to_rabbitmq(project_id):
+    logging.info(f'[FlowTraceProcessor] __send_to_rabbitmq -> START: {project_id}')
+    result = rabbitmq.publish_flow_message(project_id)
     logging.info(f'[FlowTraceProcessor] __send_to_rabbitmq -> END: {result}')
