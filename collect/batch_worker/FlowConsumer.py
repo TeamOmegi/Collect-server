@@ -71,11 +71,9 @@ class FlowConsumer:
                         logging.info("Parent span ID starts with '00000'")
                         self.schedule_process_flow(raw_flow.trace_id, raw_flow.project_id)
 
-                    else:
-                        logging.info("Normal span")
-                        index = os.getenv('ELASTICSEARCH_FLOW_INDEX')
-                        raw_flow_dict = raw_flow.dict()
-                        ElasticSearchRepository.insert_with_index(raw_flow_dict, index)
+                    index = os.getenv('ELASTICSEARCH_FLOW_INDEX')
+                    raw_flow_dict = raw_flow.dict()
+                    ElasticSearchRepository.insert_with_index(raw_flow_dict, index)
 
         except KeyboardInterrupt:
             logging.info("Aborted by user...")
