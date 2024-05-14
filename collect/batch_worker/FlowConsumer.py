@@ -66,7 +66,7 @@ class FlowConsumer:
                                        )
 
                     if 0 < second_send < 10:
-                        logging.info("Second span " + second_send)
+                        logging.info(f'Second send : {second_send}')
                         traces = ElasticSearchRepository.find_all_by_trace_id(raw_flow.trace_id)
 
                         if not traces:
