@@ -56,7 +56,7 @@ class FlowConsumer:
                                        span_exit_time=message.value['spanExitTime']
                                        )
 
-                    if raw_flow.parent_span_id == '0000000000000000' or raw_flow.parent_span_id is None:
+                    if raw_flow.parent_span_id.startswith('00000') or raw_flow.parent_span_id is None:
                         time.sleep(1)
                         FlowTraceProcessor.process_flow(raw_flow)
                     else:
