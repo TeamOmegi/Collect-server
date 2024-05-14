@@ -16,11 +16,15 @@ def decode_token(token: str) -> tuple:
         decoded = base64.b64decode(secret_key_bytes)
         key = hashlib.sha256(decoded).digest()
 
-        decoded_token = jwt.decode(token, key=decoded, algorithms=["HS256"], options={"verify_signature": True, "verify_aud": False, "verify_iat": False, "verify_exp": False, "verify_nbf": False, "verify_iss": False, "verify_sub": False, "require": []})
-        project_id = decoded_token.get("projectId")
-        service_id = decoded_token.get("serviceId")
+        decoded_token = jwt.decode(token, key=decoded, algorithms=["HS256"],
+                                   options={"verify_signature": True, "verify_aud": False, "verify_iat": False,
+                                            "verify_exp": False, "verify_nbf": False, "verify_iss": False,
+                                            "verify_sub": False, "require": []})
 
-        if service_id or project_id is None:
+        project_id = decoded_token['projectId']
+        service_id = decoded_token['serviceId']
+
+        if service_id is None or project_id is None:
             print("Invalid token: Missing required claims")
             return None
 
@@ -59,4 +63,3 @@ def create_jwt_for_service(service_id, expiration_ms):
 
     token = jwt.encode(payload, secret_key, algorithm="HS256")
     return token
-
