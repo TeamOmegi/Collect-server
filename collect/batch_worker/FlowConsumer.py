@@ -66,14 +66,17 @@ class FlowConsumer:
                                        )
 
                     if second_send:
+                        logging.info("second span")
                         FlowTraceProcessor.process_flow(raw_flow)
 
                     elif raw_flow.parent_span_id.startswith('00000') or raw_flow.parent_span_id is None:
+                        logging.info("parent_span_id.startswith('00000')")
                         message.value['secondSend'] = True
                         time.sleep(3)
                         self.producer.send(os.getenv('KAFKA_LINK_TOPIC'), value=message.value)
 
                     else:
+                        logging.info("normal span")
                         index = os.getenv('ELASTICSEARCH_FLOW_INDEX')
                         raw_flow_dict = raw_flow.dict()
                         ElasticSearchRepository.insert_with_index(raw_flow_dict, index)

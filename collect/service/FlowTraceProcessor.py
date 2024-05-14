@@ -55,11 +55,11 @@ def __process_traces_to_flow_data(traces, data: RawFlow) -> Flow | None:
 
 def __insert_to_mysql_if_not_exist(data: Flow):
     logging.info('[FlowTraceProcessor] __insert_to_mysql -> START')
-    logging.debug(f'[FlowTraceProcessor] __insert_to_mysql -> DATA: {data}')
+    logging.info(f'[FlowTraceProcessor] __insert_to_mysql -> DATA: {data}')
 
     services = data.service_flow_asc
     pre_service = None
-    database = MySqlClient.get_database()
+    session = MySqlClient.get_database()
 
     for service in services:
         if pre_service is None:
@@ -72,10 +72,11 @@ def __insert_to_mysql_if_not_exist(data: Flow):
             enabled=True
         )
 
-        exists = check_service_link_exists(pre_service, service_link.linked_service_id, database)
+        exists = check_service_link_exists(pre_service, service_link.linked_service_id, session)
+        logging.info(f'[FlowTraceProcessor] __insert_to_mysql -> exists: {exists}')
 
         if not exists:
-            insert = MySqlRespository.insert_service_link(service_link, database)
+            insert = MySqlRespository.insert_service_link(service_link, session)
             logging.info(f'[FlowTraceProcessor] __insert_to_mysql -> INSERT_ID: {insert}')
 
         pre_service = service['serviceId']
