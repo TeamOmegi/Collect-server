@@ -2,7 +2,7 @@ import logging
 import json
 import time
 
-from kafka import KafkaConsumer
+from kafka import KafkaConsumer, KafkaProducer
 from dotenv import load_dotenv
 import os
 
@@ -20,6 +20,7 @@ class FlowConsumer:
     group_id = ''
     rabbitmq = None
     consumer = None
+    producer = None
 
     def __init__(self):
         self.bootstrap_servers = [f'{os.getenv("KAFKA_HOST_1")}:{os.getenv("KAFKA_PORT")}',
@@ -38,9 +39,16 @@ class FlowConsumer:
         )
         self.consumer.subscribe(self.topic)
 
+        self.producer = KafkaProducer(
+            bootstrap_servers=self.bootstrap_servers,
+            value_serializer=lambda v: json.dumps(v).encode('utf-8')
+        )
+
     def activate_listener(self):
         try:
             for message in self.consumer:
+                second_send = message.value.get('secondSend')
+
                 logging.info(f'[FlowConsumer] activate_listener -> Received message: {message}')
                 project_id, service_id = JwtService.decode_token(message.value['token'])
                 logging.info(f'Project ID: {project_id}')
@@ -56,14 +64,20 @@ class FlowConsumer:
                                        span_exit_time=message.value['spanExitTime']
                                        )
 
-                    if raw_flow.parent_span_id.startswith('00000') or raw_flow.parent_span_id is None:
-                        time.sleep(1)
+                    if not second_send:
                         FlowTraceProcessor.process_flow(raw_flow)
+
+                    elif raw_flow.parent_span_id.startswith('00000') or raw_flow.parent_span_id is None:
+                        message.value['secondSend'] = True
+                        self.producer.send(os.getenv('KAFKA_LINK_TOPIC'), value=message.value)
+
                     else:
                         index = os.getenv('ELASTICSEARCH_FLOW_INDEX')
                         raw_flow_dict = raw_flow.dict()
                         ElasticSearchRepository.insert_with_index(raw_flow_dict, index)
+
         except KeyboardInterrupt:
             print("Aborted by user...", flush=True)
         finally:
             self.consumer.close()
+            self.producer.close()
