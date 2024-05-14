@@ -48,6 +48,7 @@ class FlowConsumer:
         try:
             for message in self.consumer:
                 second_send = message.value.get('secondSend')
+                logging.info(message.value.get('secondSend'))
 
                 logging.info(f'[FlowConsumer] activate_listener -> Received message: {message}')
                 project_id, service_id = JwtService.decode_token(message.value['token'])
@@ -64,7 +65,7 @@ class FlowConsumer:
                                        span_exit_time=message.value['spanExitTime']
                                        )
 
-                    if not second_send:
+                    if second_send:
                         FlowTraceProcessor.process_flow(raw_flow)
 
                     elif raw_flow.parent_span_id.startswith('00000') or raw_flow.parent_span_id is None:
