@@ -30,6 +30,7 @@ class RabbitMQFlowSender:
         self.channel.queue_declare(queue=self.queue_name, durable=True)
 
     def publish_flow_message(self, data: Flow):
+        self.connect()
 
         try:
             body = {
