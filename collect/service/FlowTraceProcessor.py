@@ -61,7 +61,7 @@ def __insert_to_mysql_if_not_exist(data: Flow):
     pre_service = -1
 
     # 토큰 없어서 임시로 넣어줬는데 나중에 바꿔야함~!~!~!~!~!~!
-    count = 0
+    count = 10
     for service in services:
         count += 1
         if pre_service == -1:
