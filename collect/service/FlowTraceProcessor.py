@@ -13,6 +13,7 @@ from dto.Flow import Flow
 
 def process_flow(raw_flow: RawFlow) -> bool:
     services = __find_all_trace_from_elasticsearch(raw_flow)
+    logging.info(f'[FlowTraceProcessor] __find_all_trace_from_elasticsearch -> services: {services}')
     processed_flow = __process_traces_to_flow_data(services, raw_flow)
     __insert_to_mysql_if_not_exist(processed_flow)
     return True
@@ -24,6 +25,8 @@ def __find_all_trace_from_elasticsearch(data: RawFlow) -> List | None:
     trace_id = data.trace_id
 
     found_trace = ElasticSearchRepository.find_all_by_trace_id(trace_id)
+    logging.info(f'[FlowTraceProcessor] __find_all_trace_from_elasticsearch -> found_trace: {found_trace}')
+
     services.append(data)
 
     if found_trace is not None:
