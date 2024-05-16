@@ -44,11 +44,6 @@ def find_by_trace_id_must_error(trace_id, project_id, service_id):
                             }
                         },
                         {
-                            "match": {
-                                "serviceId": service_id
-                            }
-                        },
-                        {
                             "exists": {
                                 "field": "error"
                             }
@@ -74,11 +69,6 @@ def find_parent_span_id(project_id, service_id, span_id):
                         {
                             "match": {
                                 "projectId": project_id
-                            }
-                        },
-                        {
-                            "match": {
-                                "serviceId": service_id
                             }
                         },
                         {
