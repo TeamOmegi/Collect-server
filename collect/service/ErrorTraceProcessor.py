@@ -17,7 +17,7 @@ rabbitmq.declare_queue()
 
 
 def check_service_project_exists(project_id, service_id) -> bool:
-    session = MongoRepository.get_session()
+    session = MySqlClient.get_session()
     try :
         if MySqlRespository.check_project_exists(project_id, session) and MySqlRespository.check_service_exists(service_id, session):
             return True
