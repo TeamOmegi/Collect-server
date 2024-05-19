@@ -16,6 +16,19 @@ rabbitmq.connect()
 rabbitmq.declare_queue()
 
 
+def check_service_project_exists(project_id, service_id) -> bool:
+    session = MongoRepository.get_session()
+    try :
+        if MySqlRespository.check_project_exists(project_id, session) and MySqlRespository.check_service_exists(service_id, session):
+            return True
+        return False
+    except Exception as e:
+        logging.error(e.message)
+        return False
+    finally:
+        session.close()
+
+
 def process_work(work: Work) -> bool:
     # 1. work에 error_trace가 존재하지 않을 경우 찾아옴
     if work.error_trace is None or len(work.error_trace) == 0:
@@ -119,8 +132,14 @@ def __insert_to_mysql(data: ErrorLog, mongo_id: str) -> object:
         summary=data.summary,
         time=data.time,
     )
-    error_id = MySqlRespository.insert(error, MySqlClient.get_database())
-    return error_id
+    session = MySqlClient.get_database()
+    try:
+        error_id = MySqlRespository.insert(error, session)
+        return error_id
+    except Exception as e:
+        logging.error(f'[ErrorTraceProcessor] {e.message} - __insert_to_mysql -> START')
+    finally:
+        session.close()
 
 
 def __send_to_rabbitmq(data: int):

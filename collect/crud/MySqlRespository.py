@@ -2,6 +2,8 @@ from typing import List
 
 from sqlmodel import Session
 from entity.Error import Error
+from entity.Service import Service
+from entity.Project import Project
 from entity.ServiceLink import ServiceLink
 
 
@@ -31,3 +33,11 @@ def check_service_link_exists(service_id, linked_service_id, session: Session) -
 
 def find_all(session: Session) -> List[Error]:
     return session.query(Error).all()
+
+
+def check_service_exists(service_id, session: Session) -> bool:
+    return session.query(Service).filter(Service.service_id == service_id).exists()
+
+
+def check_project_exists(project_id, session: Session) -> bool:
+    return session.query(Project).filter(Project.project_id == project_id).exists()

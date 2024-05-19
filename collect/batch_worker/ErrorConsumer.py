@@ -39,7 +39,11 @@ class ErrorConsumer:
                 logging.info(f'Service ID: {service_id}')
 
                 if service_id is not None and project_id is not None:
-                    # 2. 에러 포함 로그인지 확인
+                    # 2. project, service id 확인
+                    if not ErrorTraceProcessor.check_service_project_exists(project_id, service_id):
+                        logging.info(f'[ErrorConsumer] activate_listener -> END: Token ProjectId and ServiceId are not correct')
+                        continue
+                    # 3. 에러 포함 로그인지 확인
                     if message.value['error']:
                         logging.info('[ErrorConsumer] activate_listener -> START: Error message received')
                         work = Work(trace_id=message.value['traceId'],
@@ -57,6 +61,8 @@ class ErrorConsumer:
                         self.__insert_to_elasticsearch(message.value, project_id, service_id)
         except KeyboardInterrupt:
             print("Aborted by user...", flush=True)
+        except Exception as e:
+            logging.warning(f'[ErrorConsumer] activate_listener -> ERROR: {e.message}')
         finally:
             self.consumer.close()
 
