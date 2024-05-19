@@ -62,7 +62,7 @@ class ErrorConsumer:
         except KeyboardInterrupt:
             print("Aborted by user...", flush=True)
         except Exception as e:
-            logging.warning(f'[ErrorConsumer] activate_listener -> ERROR: {e.message}')
+            logging.warning(f'[ErrorConsumer] activate_listener -> ERROR: {e}')
         finally:
             self.consumer.close()
 

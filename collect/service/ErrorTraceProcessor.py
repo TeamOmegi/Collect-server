@@ -17,13 +17,13 @@ rabbitmq.declare_queue()
 
 
 def check_service_project_exists(project_id, service_id) -> bool:
-    session = MySqlClient.get_session()
+    session = MySqlClient.get_database()
     try :
         if MySqlRespository.check_project_exists(project_id, session) and MySqlRespository.check_service_exists(service_id, session):
             return True
         return False
     except Exception as e:
-        logging.error(e.message)
+        logging.error(e)
         return False
     finally:
         session.close()
