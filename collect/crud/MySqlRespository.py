@@ -1,6 +1,7 @@
 from typing import List
 
 from sqlmodel import Session
+from sqlalchemy import exists
 from entity.Error import Error
 from entity.Service import Service
 from entity.Project import Project
@@ -36,8 +37,7 @@ def find_all(session: Session) -> List[Error]:
 
 
 def check_service_exists(service_id, session: Session) -> bool:
-    return session.query(Service).filter(Service.service_id == service_id).exists()
-
+    return session.query(exists().where(Service.service_id == service_id)).scalar()
 
 def check_project_exists(project_id, session: Session) -> bool:
-    return session.query(Project).filter(Project.project_id == project_id).exists()
+    return session.query(exists().where(Project.project_id == project_id)).scalar()
