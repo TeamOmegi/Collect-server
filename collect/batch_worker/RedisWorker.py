@@ -41,7 +41,7 @@ class RedisWorker:
                 time.sleep(self.slow_interval)
                 continue
             result = ErrorTraceProcessor.process_work(work)
-            if not result and work.count < 10:
+            if not result and work.count < 60:
                     RedisRepository.enqueue_data(work, self.slow_que)
             time.sleep(self.slow_interval)
 
