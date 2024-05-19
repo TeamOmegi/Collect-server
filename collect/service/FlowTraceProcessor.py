@@ -61,22 +61,27 @@ def __insert_to_mysql_if_not_exist(data: Flow):
     pre_service = None
     session = MySqlClient.get_database()
 
-    for service in services:
-        if pre_service is None:
+    try:
+        for service in services:
+            if pre_service is None:
+                pre_service = service['serviceId']
+                continue
+
+            service_link = ServiceLink(
+                service_id=pre_service,
+                linked_service_id=service['serviceId'],
+                enabled=True
+            )
+
+            exists = check_service_link_exists(pre_service, service_link.linked_service_id, session)
+            logging.info(f'[FlowTraceProcessor] __insert_to_mysql -> exists: {exists}')
+
+            if not exists:
+                insert = MySqlRespository.insert_service_link(service_link, session)
+                logging.info(f'[FlowTraceProcessor] __insert_to_mysql -> INSERT_ID: {insert}')
+
             pre_service = service['serviceId']
-            continue
-
-        service_link = ServiceLink(
-            service_id=pre_service,
-            linked_service_id=service['serviceId'],
-            enabled=True
-        )
-
-        exists = check_service_link_exists(pre_service, service_link.linked_service_id, session)
-        logging.info(f'[FlowTraceProcessor] __insert_to_mysql -> exists: {exists}')
-
-        if not exists:
-            insert = MySqlRespository.insert_service_link(service_link, session)
-            logging.info(f'[FlowTraceProcessor] __insert_to_mysql -> INSERT_ID: {insert}')
-
-        pre_service = service['serviceId']
+    except Exception as e:
+        logging.error(f'[FlowTraceProcessor]')
+    finally:
+        session.close()
