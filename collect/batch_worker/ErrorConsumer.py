@@ -30,39 +30,44 @@ class ErrorConsumer:
     def activate_listener(self):
         try:
             for message in self.consumer:
-                logging.info(f'[ErrorConsumer] activate_listener -> Received message')
-                logging.debug(f'[ErrorConsumer] activate_listener -> MESSAGE : {message}')
-                # 1. 로그 토큰 인증 (project, service id 받기)
-                project_id, service_id = JwtService.decode_token(message.value['token'])
+                try:
+                    logging.info(f'[ErrorConsumer] activate_listener -> Received message')
+                    logging.debug(f'[ErrorConsumer] activate_listener -> MESSAGE : {message}')
 
-                logging.info(f'Project ID: {project_id}')
-                logging.info(f'Service ID: {service_id}')
+                    # 1. 로그 토큰 인증 (project, service id 받기)
+                    project_id, service_id = JwtService.decode_token(message.value['token'])
 
-                if service_id is not None and project_id is not None:
-                    # 2. project, service id 확인
-                    if not ErrorTraceProcessor.check_service_project_exists(project_id, service_id):
-                        logging.info(f'[ErrorConsumer] activate_listener -> END: Token ProjectId and ServiceId are not correct')
-                        continue
-                    # 3. 에러 포함 로그인지 확인
-                    if message.value['error']:
-                        logging.info('[ErrorConsumer] activate_listener -> START: Error message received')
-                        work = Work(trace_id=message.value['traceId'],
-                                    project_id=project_id,
-                                    service_id=service_id,
-                                    count=0,
-                                    error_trace=message.value
-                                    )
-                        result = ErrorTraceProcessor.process_work(work)
-                        if not result:
-                            logging.warning('[ErrorConsumer] activate_listener -> START: Error message received')
+                    logging.info(f'Project ID: {project_id}')
+                    logging.info(f'Service ID: {service_id}')
+
+                    if service_id is not None and project_id is not None:
+                        # 2. project, service id 확인
+                        if not ErrorTraceProcessor.check_service_project_exists(project_id, service_id):
+                            logging.info(f'[ErrorConsumer] activate_listener -> END: Token ProjectId and ServiceId are not correct')
+                            continue
+
+                        # 3. 에러 포함 로그인지 확인
+                        if message.value['error']:
+                            logging.info('[ErrorConsumer] activate_listener -> START: Error message received')
+                            work = Work(trace_id=message.value['traceId'],
+                                        project_id=project_id,
+                                        service_id=service_id,
+                                        count=0,
+                                        error_trace=message.value
+                                        )
+                            result = ErrorTraceProcessor.process_work(work)
+                            if not result:
+                                logging.warning('[ErrorConsumer] activate_listener -> START: Error message received')
+                                self.__insert_to_elasticsearch(message.value, project_id, service_id)
+                                RedisRepository.enqueue_data(work, os.environ.get("REDIS_FAST_QUE"))
+                        else:
                             self.__insert_to_elasticsearch(message.value, project_id, service_id)
-                            RedisRepository.enqueue_data(work, os.environ.get("REDIS_FAST_QUE"))
-                    else:
-                        self.__insert_to_elasticsearch(message.value, project_id, service_id)
+                except Exception as e:
+                    logging.warning(f'[ErrorConsumer] activate_listener -> ERROR: {e}')
+                    # 개별 메시지 처리 중 오류 발생 시 다음 메시지로 넘어감
+                    continue
         except KeyboardInterrupt:
             print("Aborted by user...", flush=True)
-        except Exception as e:
-            logging.warning(f'[ErrorConsumer] activate_listener -> ERROR: {e}')
         finally:
             self.consumer.close()
 
