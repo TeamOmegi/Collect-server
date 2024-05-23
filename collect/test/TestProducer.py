@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 
 from kafka import KafkaProducer
@@ -5,10 +6,11 @@ import json
 
 
 def make_data():
-    producer = KafkaProducer(bootstrap_servers=['localhost:9092'],
+    producer = KafkaProducer(bootstrap_servers=[f'{os.getenv("KAFKA_HOST_1")}:{os.getenv("KAFKA_PORT")}',
+                                                f'{os.getenv("KAFKA_HOST_2")}:{os.getenv("KAFKA_PORT")}'],
                              value_serializer=lambda v: json.dumps(v).encode('utf-8'))
 
-    for i in range(5000):
+    for i in range(500000):
         message = {
             "tracer": "omegi-tracer-python",
             "traceId": "6aaa192456e549c23587ad92e7d29916",
@@ -83,7 +85,7 @@ def make_data():
                 }
             ]
         }
-        producer.send('error', value=message)
+        producer.send(os.getenv("KAFKA_LOG_TOPIC"), value=message)
 
         message = {
             "tracer": "io.opentelemetry.spring-webflux-5.3:2.4.0-alpha-SNAPSHOT",
@@ -155,10 +157,10 @@ def make_data():
                 }
             ]
         }
-        producer.send('error', value=message)
+        producer.send(os.getenv("KAFKA_LOG_TOPIC"), value=message)
 
     producer.flush()
     producer.close()
-    print("데이터 10000개 발행 완료", flush=True)
+    print("데이터 1000000개 발행 완료", flush=True)
     time = datetime.now()
     print(f'발행 시간 : {time}', flush=True)

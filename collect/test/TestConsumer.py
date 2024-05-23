@@ -1,5 +1,6 @@
 import json
 import logging
+import threading
 from datetime import datetime
 
 from kafka import KafkaConsumer
@@ -8,7 +9,7 @@ import os
 
 from crud import ElasticSearchRepository, RedisRepository
 from dto.Work import Work
-import TestTraceProcessor
+from test.TestTraceProcessor import process_work
 from auth import JwtService
 
 load_dotenv()
@@ -19,55 +20,47 @@ class ErrorConsumer:
     topics = []
     group_id = ''
     consumer = None
-    count = 0
+    consumed_count = 0
 
     def __init__(self):
-        self.bootstrap_servers = ['localhost:9092']
+        logging.info("들어왔습니당")
+        self.bootstrap_servers = [f'{os.getenv("KAFKA_HOST_1")}:{os.getenv("KAFKA_PORT")}',
+                                  f'{os.getenv("KAFKA_HOST_2")}:{os.getenv("KAFKA_PORT")}']
         self.topics = [os.getenv("KAFKA_LOG_TOPIC")]
         self.group_id = os.getenv("KAFKA_GROUP_ID")
         self.__set_kafka__()
+        self.lock = threading.Lock()
 
     def activate_listener(self):
         try:
             for message in self.consumer:
-                if self.count == 0:
-                    print(f'consumer 시작\n{datetime.now()}')
+                if self.consumed_count == 0:
+                    print(f'consumer 시작\n{datetime.now()}', flush=True)
 
                 try:
-                    self.count += 1
-                    logging.info(f'[ErrorConsumer] activate_listener -> Received message')
-                    logging.debug(f'[ErrorConsumer] activate_listener -> MESSAGE : {message}')
-
+                    with self.lock:
+                        self.consumed_count += 1
                     # 1. 로그 토큰 인증 (project, service id 받기)
                     project_id, service_id = JwtService.decode_token(message.value['token'])
-
-                    logging.info(f'Project ID: {project_id}')
-                    logging.info(f'Service ID: {service_id}')
 
                     if service_id is not None and project_id is not None:
                         # 3. 에러 포함 로그인지 확인
                         if message.value['error']:
-                            logging.info('[ErrorConsumer] activate_listener -> START: Error message received')
                             work = Work(trace_id=message.value['traceId'],
                                         project_id=project_id,
                                         service_id=service_id,
                                         count=0,
                                         error_trace=message.value
                                         )
-                            result = TestTraceProcessor.process_work(work)
+                            result = process_work(work)
                             if not result:
-                                logging.warning('[ErrorConsumer] activate_listener -> START: Error message received')
                                 self.__insert_to_elasticsearch(message.value, project_id, service_id)
                                 RedisRepository.enqueue_data(work, os.environ.get("REDIS_FAST_QUE"))
                         else:
                             self.__insert_to_elasticsearch(message.value, project_id, service_id)
                 except Exception as e:
-                    logging.warning(f'[ErrorConsumer] activate_listener -> ERROR: {e}')
                     # 개별 메시지 처리 중 오류 발생 시 다음 메시지로 넘어감
                     continue
-
-                if self.count % 1000 == 0:
-                    print(f'consumer message {self.count}개 소비 완료\n{datetime.now()}')
 
         except KeyboardInterrupt:
             print("Aborted by user...", flush=True)
@@ -75,13 +68,9 @@ class ErrorConsumer:
             self.consumer.close()
 
     def __insert_to_elasticsearch(self, data, project_id, service_id):
-        logging.info(f'[ErrorConsumer] __insert_to_elasticsearch -> START')
-        logging.debug(f'[ErrorConsumer] __insert_to_elasticsearch -> START: {data}')
         data['projectId'] = project_id
         data['serviceId'] = service_id
         ElasticSearchRepository.insert(data)
-        logging.info(f'[ErrorConsumer] __insert_to_elasticsearch -> END:')
-        logging.debug(f'[ErrorConsumer] __insert_to_elasticsearch -> END: {data}')
 
     def __set_kafka__(self):
         self.consumer = KafkaConsumer(
@@ -92,3 +81,7 @@ class ErrorConsumer:
             value_deserializer=lambda m: json.loads(m.decode('utf-8'))
         )
         self.consumer.subscribe(self.topics)
+
+    def get_consumed_count(self):
+        with self.lock:
+            return self.consumed_count
